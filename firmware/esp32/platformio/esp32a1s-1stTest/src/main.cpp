@@ -87,6 +87,8 @@
 //   }
 //   sineWave.setFrequency(freq);
 // }
+
+
 // /**
 //  * @file streams-url_mp3-audiokit.ino
 //  * @author Phil Schatzmann
@@ -101,12 +103,14 @@
 
 #include "AudioTools.h"
 #include "AudioCodecs/CodecMP3Helix.h"
+#include "AudioCodecs/CodecAACHelix.h"
 #include "AudioLibs/AudioKit.h"
+#include "webcredentials.h"
 
-
-URLStream url("3WO8kiazq8Ok17E","8y43859N30A72qe");  // or replace with ICYStream to get metadata
+URLStream url(WIFI_SSID,WIFI_PASSWORD);  // or replace with ICYStream to get metadata
 AudioKitStream i2s; // final output of decoded stream
-EncodedAudioStream dec(&i2s, new MP3DecoderHelix()); // Decoding stream
+//EncodedAudioStream dec(&i2s, new MP3DecoderHelix()); // Decoding stream for MP3
+EncodedAudioStream dec(&i2s, new AACDecoderHelix()); // Decoding stream for AAC
 StreamCopy copier(dec, url); // copy url to decoder
 
 
@@ -122,7 +126,9 @@ void setup(){
   dec.begin();
 
   // mp3 radio
-  url.begin("https://22673.live.streamtheworld.com/RADIO1_128.mp3","audio/mp3");
+  //url.begin("http://icecast-qmusicbe-cdp.triple-it.nl/joe.mp3","audio/mp3");  //works with mp3 decoder
+  //url.begin("http://vrt.streamabc.net/vrt-mnm-mp3-64-4492886","audio/mpeg");  //works with mp3 decoder
+  url.begin("http://streamnavs.net:8089/live","audio/aacp");  // works with aac decoder
 
 }
 
