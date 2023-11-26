@@ -1,0 +1,37 @@
+ESP8266 : https://hackaday.io/project/11570-wifi-webradio-on-esp8266-or-esp32
+https://hackaday.io/project/174041-bonnaroo-jukebox-time-capsule
+https://hackaday.io/project/168354-esp32-based-internet-radio-and-bluetooth-speaker
+
+Components:
+* VS1053 module (all stations): 
+	(https://www.aliexpress.com/item/32354143509.html)
+	https://www.aliexpress.com/item/32956293891.html
+	https://www.banggood.com/VS1053-MP3-Module-Development-Board-On-Board-Recording-Function-p-1244003.html
+* I2S decoder (only mp3 stations): TECNOIOT 2pcs PCM5102 Decoder GY-PCM5102 I2S Interface Format Player Digital Audio PCM5102A
+* Audio amplifier:
+	https://www.banggood.com/PAM8403-2-Channel-USB-Power-Audio-Amplifier-Module-Board-3Wx2-Volume-Control-p-1068215.html
+* audio transformer : from output of mp3 decoder to input of audio amplifier (https://youtu.be/4bm22sN5hWE?t=117)
+* ESP32
+	watch out for width, so that it still fits a breadboard: 
+	NodeMCU-32S
+		KS0413 keyestudio ESP32 Core Board (Spiess) platformio : NodeMCU-32S
+			http://wiki.ai-thinker.com/esp32/boards/nodemcu_32s
+		https://www.aliexpress.com/item/32899558932.html
+		https://www.aliexpress.com/item/32998131047.html
+		https://wiki.keyestudio.com/KS0413_keyestudio_ESP32_Core_Board
+	Wemos LOLIN32 Lite (obsolete, platformio = lolin32)
+		https://www.aliexpress.com/item/33009124491.html -> lolin32, https://draeger-it.blog/microcontroller-esp32-lolin32/?cn-reloaded=1
+		https://www.aliexpress.com/item/4000340140634.html
+		https://www.youtube.com/watch?v=a9f9vHjQSfQ
+	wemos D1 mini
+		https://www.aliexpress.com/item/4000232057013.html 
+		https://www.aliexpress.com/item/32816065152.html 
+* ESP32 debugger/programmer
+	https://de.aliexpress.com/item/33022365662.html
+	https://www.youtube.com/watch?v=psMqilqlrRQ&list=PL3XBzmAj53RnZPeWe799F-uoXERBldhn9&index=40
+	https://www.youtube.com/watch?v=0poh_2rBq7E&list=PL3XBzmAj53RnZPeWe799F-uoXERBldhn9&index=38
+	SSL: https://www.youtube.com/watch?v=Wm1xKj4bKsY&list=PL3XBzmAj53RnZPeWe799F-uoXERBldhn9&index=33
+Source:
+* https://github.com/karawin/Ka-Radio32 (simple rotary encoder or android app for control)
+* https://github.com/Edzelf/ESP32-Radio (nextion display for control)
+* https://github.com/MrBuddyCasino/ESP32_MP3_Decoder (with bluetooth audio output)
