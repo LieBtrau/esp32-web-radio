@@ -1,23 +1,27 @@
 #include "AacPlayer.h"
+#include "webcredentials.h"
 
-AacPlayer::AacPlayer(AudioKitStream* i2s, URLStream* url, const char *path, const char *mime_type)
-    : dec(i2s, new AACDecoderHelix()),copier(dec, *url), pUrl(url), path(path), mime_type(mime_type)
+AacPlayer::AacPlayer(const char *path, const char *mime_type)
+    : dec(&i2s, new AACDecoderHelix()),copier(dec, url), url(WIFI_SSID, WIFI_PASSWORD), path(path), mime_type(mime_type), i2s()
 {
 }
 
 AacPlayer::~AacPlayer()
 {
-    pUrl->flush();
+    url.flush();
     dec.flush();
     copier.end();
-    pUrl->end();
+    url.end();
     dec.end();
 }
 
 void AacPlayer::begin()
 {
+    auto config = i2s.defaultConfig(TX_MODE);
+    i2s.begin(config);
     dec.begin();
-    pUrl->begin(path, mime_type);
+    url.begin(path, mime_type);
+    i2s.setVolume(0.1);
 }
 
 void AacPlayer::play()

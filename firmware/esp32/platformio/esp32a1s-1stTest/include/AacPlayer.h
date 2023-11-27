@@ -6,15 +6,16 @@
 class AacPlayer
 {
 public:
-    AacPlayer(AudioKitStream* i2s, URLStream* url, const char *path, const char *mime_type);
+    AacPlayer(const char *path, const char *mime_type);
     ~AacPlayer();
     void begin();
     void play();
 
 private:
+    AudioKitStream i2s;
     EncodedAudioStream dec;
     StreamCopy copier;
-    URLStream* pUrl;
+    URLStream url;
     const char *path;
     const char *mime_type;
 };

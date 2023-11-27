@@ -6,15 +6,16 @@
 class Mp3Player
 {
 public:
-    Mp3Player(AudioKitStream* i2s, URLStream* url, const char *path, const char *mime_type);
+    Mp3Player(const char *path, const char *mime_type);
     ~Mp3Player();
     void begin();
     void play();
 
 private:
+    AudioKitStream i2s;                      // final output of decoded stream
     EncodedAudioStream dec;
     StreamCopy copier;
-    URLStream* pUrl;
+    URLStream url;
     const char *path;
     const char *mime_type;
 };
