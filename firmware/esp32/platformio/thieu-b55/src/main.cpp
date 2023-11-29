@@ -4,6 +4,7 @@
 // #include "FS.h"
 #include "ES8388.h"
 #include "wifi_credentials.h"
+#include <Bounce2.h>
 
 // I2S, pin defs from https://github.com/pschatzmann/arduino-audiokit/blob/main/src/audio_board/ai_thinker_es8388_5.h
 #define PIN_I2S_AUDIO_KIT_MCLK 0
@@ -20,9 +21,34 @@ static ES8388 dac;
 #define I2C_MASTER_SCL_IO 32
 #define I2C_MASTER_SDA_IO 33
 
+#define PIN_KEY1 36
+#define PIN_KEY2 13
+#define PIN_KEY3 19
+#define PIN_KEY4 23
+#define PIN_KEY5 18
+#define PIN_KEY6 5
+
+// Instantiate a Bounce object
+Bounce debouncer1 = Bounce(); 
+
+// Instantiate another Bounce object
+Bounce debouncer2 = Bounce(); 
+
 void setup()
 {
   Serial.begin(115200);
+
+  // Setup the first button with an internal pull-up :
+  pinMode(PIN_KEY2,INPUT_PULLUP);
+  // After setting up the button, setup the Bounce instance :
+  debouncer1.attach(PIN_KEY2);
+  debouncer1.interval(5); // interval in ms
+  
+   // Setup the second button with an internal pull-up :
+  pinMode(PIN_KEY3,INPUT_PULLUP);
+  // After setting up the button, setup the Bounce instance :
+  debouncer2.attach(PIN_KEY3);
+  debouncer2.interval(5); // interval in ms
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
   while (!dac.begin(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO))
@@ -39,8 +65,7 @@ void setup()
                                                                                                       //  audio.setVolumeSteps(64); // max 255
                                                                                                       //  audio.setVolume(63);
                                                                                                       //
-                                                                                                      //  *** radio streams ***
-  audio.connecttohost("http://stream.antennethueringen.de/live/aac-64/stream.antennethueringen.de/"); // aac
+  //  *** radio streams ***
   //  audio.connecttohost("http://mcrscast.mcr.iol.pt/cidadefm");                                         // mp3
   //  audio.connecttohost("http://www.wdr.de/wdrlive/media/einslive.m3u");                                // m3u
   //  audio.connecttohost("https://stream.srg-ssr.ch/rsp/aacp_48.asx");                                   // asx
@@ -69,6 +94,16 @@ void setup()
 void loop()
 {
   audio.loop();
+  debouncer1.update();
+  debouncer2.update();
+  if(debouncer1.fell()) {
+    Serial.println("Button 1 pressed!");
+    audio.connecttohost("http://loveradiolegaspi.radioca.st/;");                                         // mp3
+  }
+  if(debouncer2.fell()) {
+    Serial.println("Button 2 pressed!");
+    audio.connecttohost("http://stream.antennethueringen.de/live/aac-64/stream.antennethueringen.de/"); // aac
+  }
 }
 
 // optional
