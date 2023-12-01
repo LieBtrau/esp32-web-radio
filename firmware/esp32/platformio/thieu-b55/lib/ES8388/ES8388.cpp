@@ -174,21 +174,21 @@ bool ES8388::init()
   res &= write_reg(ES8388_MASTERMODE, 0x00);
 
   /* power up DAC and enable LOUT1+2 / ROUT1+2, ADC sample rate = DAC sample rate */
-  res &= write_reg(ES8388_DACPOWER, 0x3e);
-  res &= write_reg(ES8388_CONTROL1, 0x12);
+  res &= write_reg(ES8388_DACPOWER, 0xC0);  //disable DAC and disable Lout/Rout/1/2
+  res &= write_reg(ES8388_CONTROL1, 0x12);  //Enfr=0
 
   /* DAC I2S setup: 16 bit word length, I2S format; MCLK / Fs = 256*/
   res &= write_reg(ES8388_DACCONTROL1, 0x18);
   res &= write_reg(ES8388_DACCONTROL2, 0x02);
 
   /* DAC to output route mixer configuration: ADC MIX TO OUTPUT */
-  res &= write_reg(ES8388_DACCONTROL16, 0x1B);
-  res &= write_reg(ES8388_DACCONTROL17, 0x90);
-  res &= write_reg(ES8388_DACCONTROL20, 0x90);
+  res &= write_reg(ES8388_DACCONTROL16, 0x00);// 0x00 audio on LIN1&RIN1 (headset),  0x09 LIN2&RIN2
+  res &= write_reg(ES8388_DACCONTROL17, 0x90);// only left DAC to left mixer enable 0db
+  res &= write_reg(ES8388_DACCONTROL20, 0x90);// only right DAC to right mixer enable 0db
 
   /* DAC and ADC use same LRCK, enable MCLK input; output resistance setup */
   res &= write_reg(ES8388_DACCONTROL21, 0x80);
-  res &= write_reg(ES8388_DACCONTROL23, 0x00);
+  res &= write_reg(ES8388_DACCONTROL23, 0x00);//vroi=0
 
   /* DAC volume control: 0dB (maximum, unattenuated)  */
   res &= write_reg(ES8388_DACCONTROL5, 0x00);
@@ -200,7 +200,6 @@ bool ES8388::init()
   /* power up and enable DAC; */
   res &= write_reg(ES8388_DACPOWER, 0x3c);
   res &= write_reg(ES8388_DACCONTROL3, 0x00);
-  //res &= write_reg(ES8388_ADCPOWER, 0x00);
 
   /* set up MCLK) */
   PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0_CLK_OUT1);

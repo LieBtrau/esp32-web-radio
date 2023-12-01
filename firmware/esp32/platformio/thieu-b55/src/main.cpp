@@ -18,6 +18,7 @@
 #define I2C_MASTER_SCL_IO 32
 #define I2C_MASTER_SDA_IO 33
 
+#define PIN_PA_ENABLE 21
 #define PIN_KEY1 36
 #define PIN_KEY2 13
 #define PIN_KEY3 19
@@ -56,6 +57,8 @@ void setup()
     Serial.println("dac verbindinding mislukt");
     delay(1000);
   }
+  pinMode(PIN_PA_ENABLE, OUTPUT);
+  digitalWrite(PIN_PA_ENABLE, HIGH);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
     delay(1500);
