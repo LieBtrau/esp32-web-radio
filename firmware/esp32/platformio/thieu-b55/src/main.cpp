@@ -13,9 +13,6 @@
 #define PIN_I2S_AUDIO_KIT_DATA_OUT 26
 #define PIN_I2S_AUDIO_KIT_DATA_IN 35
 
-static Audio audio;
-static ES8388 dac;
-
 // I2C, pin defs from https://github.com/pschatzmann/arduino-audiokit/blob/main/src/audio_board/ai_thinker_es8388_5.h
 #define I2C_MASTER_NUM I2C_NUM_0 /*!< I2C port number for master dev */
 #define I2C_MASTER_SCL_IO 32
@@ -27,6 +24,9 @@ static ES8388 dac;
 #define PIN_KEY4 23
 #define PIN_KEY5 18
 #define PIN_KEY6 5
+
+static Audio audio;
+static ES8388 dac(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO, 400000);
 
 // Instantiate a Bounce object
 Bounce debouncer1 = Bounce(); 
@@ -51,7 +51,7 @@ void setup()
   debouncer2.interval(5); // interval in ms
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
-  while (!dac.begin(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO))
+  while (!dac.init())
   {
     Serial.println("dac verbindinding mislukt");
     delay(1000);
@@ -102,7 +102,7 @@ void loop()
   }
   if(debouncer2.fell()) {
     Serial.println("Button 2 pressed!");
-    audio.connecttohost("http://stream.antennethueringen.de/live/aac-64/stream.antennethueringen.de/"); // aac
+    audio.connecttohost("http://streamnavs.net:8089/live"); // aac
   }
 }
 
