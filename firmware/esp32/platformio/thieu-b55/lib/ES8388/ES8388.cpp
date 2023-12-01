@@ -1,4 +1,6 @@
 // https://github.com/vanbwodonk/es8388arduino
+// https://github.com/maditnerd/es8388/
+// https://github.com/pschatzmann/arduino-audiokit/blob/main/src/audio_driver/es8388/es8388.c
 
 #include "ES8388.h"
 
@@ -134,28 +136,6 @@ bool ES8388::init()
   // // Power Up Analog and Ibias
   // res &= write_reg(ES8388_CONTROL2, 0x40);
 
-  // /* ADC setting */
-  // // Micbias for Record
-  // res &= write_reg(ES8388_ADCPOWER, 0x00);
-  // // Enable Lin1/Rin1 (0x00 0x00) for Lin2/Rin2 (0x50 0x80)
-  // res &= write_reg(ES8388_ADCCONTROL2, 0x50);
-  // res &= write_reg(ES8388_ADCCONTROL3, 0x80);
-  // // PGA gain (0x88 - 24db) (0x77 - 21db)
-  // res &= write_reg(ES8388_ADCCONTROL1, 0x77);
-  // // SFI setting (i2s mode/16 bit)
-  // res &= write_reg(ES8388_ADCCONTROL4, 0x0C);
-  // // ADC MCLK/LCRK ratio (256)
-  // res &= write_reg(ES8388_ADCCONTROL5, 0x02);
-  // // set ADC digital volume
-  // res &= write_reg(ES8388_ADCCONTROL8, 0x00);
-  // res &= write_reg(ES8388_ADCCONTROL9, 0x00);
-  // // recommended ALC setting for VOICE refer to ES8388 MANUAL
-  // res &= write_reg(ES8388_ADCCONTROL10, 0xEA);
-  // res &= write_reg(ES8388_ADCCONTROL11, 0xC0);
-  // res &= write_reg(ES8388_ADCCONTROL12, 0x12);
-  // res &= write_reg(ES8388_ADCCONTROL13, 0x06);
-  // res &= write_reg(ES8388_ADCCONTROL14, 0xC3);
-
   // /* DAC setting */
   // // Power Up DAC& enable Lout/Rout
   // res &= write_reg(ES8388_DACPOWER, 0x3C);
@@ -216,14 +196,6 @@ bool ES8388::init()
 
   /* power down ADC, we don't need it */
   res &= write_reg(ES8388_ADCPOWER, 0xff);
-
-  // /* set LOUT1 / ROUT1 volume: 0dB (unattenuated) */
-  // res &= write_reg(ES8388_DACCONTROL24, 0);//0x1e);
-  // res &= write_reg(ES8388_DACCONTROL25, 0);//0x1e);
-
-  // /* set LOUT2 / ROUT2 volume: 0dB (unattenuated) */
-  // res &= write_reg(ES8388_DACCONTROL26, 0);//0x1e);
-  // res &= write_reg(ES8388_DACCONTROL27, 0);//0x1e);
 
   /* power up and enable DAC; */
   res &= write_reg(ES8388_DACPOWER, 0x3c);
