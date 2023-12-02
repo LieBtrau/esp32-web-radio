@@ -10,6 +10,9 @@
  *
  * AI-Thinker ESP32-A1S Audio Kit:
  *  DAC1 connected to PA, DAC2 connected to headphone jack
+ * 
+ * Husarnet:
+ *  Test connection from linux PC with Husarnet daemon running: `ping6 esp32-web-radio`
  */
 #include "Arduino.h"
 #include "WiFi.h"
@@ -17,6 +20,7 @@
 #include "ES8388.h"
 #include "wifi_credentials.h"
 #include <Bounce2.h>
+#include <Husarnet.h>
 
 static const char *TAG = "main";
 
@@ -43,6 +47,8 @@ static const char *TAG = "main";
 static Audio audio;
 static ES8388 dac(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO, 400000);
 
+const char *hostName = "esp32-web-radio";
+
 // Instantiate a Bounce object
 Bounce debouncer1 = Bounce();
 
@@ -51,7 +57,7 @@ Bounce debouncer2 = Bounce();
 
 void setup()
 {
-  ESP_LOGD(TAG, "\r\nBuild %s, utc: %lu\r\n", COMMIT_HASH, CURRENT_TIME);
+  ESP_LOGI(TAG, "\r\nBuild %s, utc: %lu\r\n", COMMIT_HASH, CURRENT_TIME);
 
   // Setup the first button with an internal pull-up :
   pinMode(PIN_KEY2, INPUT_PULLUP);
@@ -66,19 +72,23 @@ void setup()
   debouncer2.interval(5); // interval in ms
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
-  while (!dac.init())
-  {
-    ESP_LOGE(TAG, "Error initializing ES8388 chip");
-    delay(1000);
-  }
-  dac.setOutputVolume(ES8388::OutSel::OUTALL, 15);
-  pinMode(PIN_PA_ENABLE, OUTPUT);
-  digitalWrite(PIN_PA_ENABLE, HIGH);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(1500);
   }
+  Husarnet.join(HUSARNET_JOINCODE, hostName);
+  Husarnet.start();
+
+  while (!dac.init())
+  {
+    ESP_LOGE(TAG, "Error initializing ES8388 chip");
+    delay(1000);
+  }
+  dac.setOutputVolume(ES8388::OutSel::OUTALL, 5);
+  pinMode(PIN_PA_ENABLE, OUTPUT);
+  digitalWrite(PIN_PA_ENABLE, HIGH);
+
   audio.setPinout(PIN_I2S_AUDIO_KIT_BCK, PIN_I2S_AUDIO_KIT_WS, PIN_I2S_AUDIO_KIT_DATA_OUT);
   audio.connecttospeech("Hallo Marison, leuk dat je weer naar me wil luisteren. Hihi", "nl"); // Google TTS
 }
