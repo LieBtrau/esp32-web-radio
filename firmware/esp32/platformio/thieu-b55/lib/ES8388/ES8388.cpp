@@ -7,15 +7,10 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-static const int ADDR = 0x10;
+static const int I2C_ADDR = 0x10;
 
-
-
-ES8388::ES8388(uint8_t _sda, uint8_t _scl, uint32_t _speed)
+ES8388::ES8388(uint8_t _sda, uint8_t _scl, uint32_t _speed): _pinsda(_sda), _pinscl(_scl), _i2cspeed(_speed)
 {
-  _pinsda = _sda;
-  _pinscl = _scl;
-  _i2cspeed = _speed;
   i2c.begin(_sda, _scl, _speed);
 }
 
@@ -23,7 +18,7 @@ ES8388::~ES8388() { i2c.~TwoWire(); }
 
 bool ES8388::write_reg(ES8388_REG reg_add, uint8_t data)
 {
-  i2c.beginTransmission(ADDR);
+  i2c.beginTransmission(I2C_ADDR);
   i2c.write(static_cast<uint8_t>(reg_add));
   i2c.write(data);
   return i2c.endTransmission() == 0;
@@ -32,10 +27,10 @@ bool ES8388::write_reg(ES8388_REG reg_add, uint8_t data)
 bool ES8388::read_reg(ES8388_REG reg_add, uint8_t &data)
 {
   bool retval = false;
-  i2c.beginTransmission(ADDR);
+  i2c.beginTransmission(I2C_ADDR);
   i2c.write(static_cast<uint8_t>(reg_add));
   i2c.endTransmission(false);
-  i2c.requestFrom((uint16_t)ADDR, (uint8_t)1, true);
+  i2c.requestFrom((uint16_t)I2C_ADDR, (uint8_t)1, true);
   if (i2c.available() >= 1)
   {
     data = i2c.read();
@@ -47,7 +42,7 @@ bool ES8388::read_reg(ES8388_REG reg_add, uint8_t &data)
 bool ES8388::identify(int sda, int scl, uint32_t frequency)
 {
   i2c.begin(sda, scl, frequency);
-  i2c.beginTransmission(ADDR);
+  i2c.beginTransmission(I2C_ADDR);
   return i2c.endTransmission() == 0;
 }
 
@@ -70,13 +65,11 @@ bool ES8388::init()
     Serial.println("ES8388 not found");
     return false;
   }
-  /* mute DAC during setup, power up all systems, slave mode */
-  res &= write_reg(ES8388_REG::DACCONTROL3, 0x04);
-  res &= write_reg(ES8388_REG::CONTROL2, 0x50);
-  res &= write_reg(ES8388_REG::CHIPPOWER, 0x00);
-  res &= write_reg(ES8388_REG::MASTERMODE, 0x00);
+  res &= write_reg(ES8388_REG::DACCONTROL3, 0x04);  // mute analog outputs for both channels
+  res &= write_reg(ES8388_REG::CONTROL2, 0x50); // not sure what this really does.  It sets the undocumented bit 6.
+  res &= write_reg(ES8388_REG::CHIPPOWER, 0x00);  // power up all parts of the chip
+  res &= write_reg(ES8388_REG::MASTERMODE, 0x00); // set to slave mode (receive MCLK from external source)
 
-  /* power up DAC and enable LOUT1+2 / ROUT1+2, ADC sample rate = DAC sample rate */
   res &= write_reg(ES8388_REG::DACPOWER, 0xC0); // disable DAC and disable Lout/Rout/1/2
   res &= write_reg(ES8388_REG::CONTROL1, 0x12); // Enfr=0
 
@@ -84,8 +77,7 @@ bool ES8388::init()
   res &= write_reg(ES8388_REG::DACCONTROL1, 0x18);
   res &= write_reg(ES8388_REG::DACCONTROL2, 0x02);
 
-  /* DAC to output route mixer configuration: ADC MIX TO OUTPUT */
-  res &= write_reg(ES8388_REG::DACCONTROL16, 0x00); // 0x00 audio on LIN1&RIN1 (headset),  0x09 LIN2&RIN2
+  /* DAC to output route mixer configuration: */
   res &= write_reg(ES8388_REG::DACCONTROL17, 0x90); // only left DAC to left mixer enable 0db
   res &= write_reg(ES8388_REG::DACCONTROL20, 0x90); // only right DAC to right mixer enable 0db
 
@@ -94,15 +86,15 @@ bool ES8388::init()
   res &= write_reg(ES8388_REG::DACCONTROL23, 0x00); // vroi=0
 
   /* DAC volume control: 0dB (maximum, unattenuated)  */
-  res &= write_reg(ES8388_REG::DACCONTROL5, 0x00);
-  res &= write_reg(ES8388_REG::DACCONTROL4, 0x00);
+  res &= write_reg(ES8388_REG::DACCONTROL4, 0x00);  // LDACVOL
+  res &= write_reg(ES8388_REG::DACCONTROL5, 0x00);  // RDACVOL
 
   /* power down ADC, we don't need it */
   res &= write_reg(ES8388_REG::ADCPOWER, 0xff);
 
   /* power up and enable DAC; */
-  res &= write_reg(ES8388_REG::DACPOWER, 0x3c);
-  res &= write_reg(ES8388_REG::DACCONTROL3, 0x00);
+  res &= write_reg(ES8388_REG::DACPOWER, 0x3c);//enable DAC (L&R) and enable Lout/Rout/1/2
+  res &= write_reg(ES8388_REG::DACCONTROL3, 0x00);//DAC volume control, unmute both DAC channels
 
   /* set up MCLK) */
   PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0_CLK_OUT1);
@@ -111,20 +103,27 @@ bool ES8388::init()
   return res;
 }
 
-// Select output sink
+// Line In to Output mixer routing
 // OUT1 -> Select Line OUTL/R1
 // OUT2 -> Select Line OUTL/R2
 // OUTALL -> Enable ALL
-bool ES8388::outputSelect(outsel_t _sel)
+bool ES8388::outputSelect(OutSel _sel)
 {
-  bool res = true;
-  if (_sel == OUTALL)
-    res &= write_reg(ES8388_REG::DACPOWER, 0x3C);
-  else if (_sel == OUT1)
-    res &= write_reg(ES8388_REG::DACPOWER, 0x30);
-  else if (_sel == OUT2)
-    res &= write_reg(ES8388_REG::DACPOWER, 0x0C);
-  _outSel = _sel;
+  bool res = false;
+  switch(_sel)
+  {
+    case OutSel::OUT1:
+      res = write_reg(ES8388_REG::DACCONTROL16, 0x30);
+      break;
+    case OutSel::OUT2:
+      res = write_reg(ES8388_REG::DACCONTROL16, 0x0C);
+      break;
+    case OutSel::OUTALL:
+      res = write_reg(ES8388_REG::DACCONTROL16, 0x3C);
+      break;
+    default:
+      break;
+  }
   return res;
 }
 
@@ -158,27 +157,30 @@ bool ES8388::inputSelect(insel_t sel)
 bool ES8388::DACmute(bool mute)
 {
   uint8_t _reg;
-  read_reg(ES8388_REG::ADCCONTROL1, _reg);
-  bool res = true;
+  read_reg(ES8388_REG::DACCONTROL3, _reg);
   if (mute)
-    res &= write_reg(ES8388_REG::DACCONTROL3, _reg | 0x04);
+  {
+    bitSet(_reg, 2);
+  }
   else
-    res &= write_reg(ES8388_REG::DACCONTROL3, _reg & ~(0x04));
-  return res;
+  {
+    bitClear(_reg, 2);
+  }
+  return  write_reg(ES8388_REG::DACCONTROL3, _reg);;
 }
 
 // set output volume max is 33
-bool ES8388::setOutputVolume(uint8_t vol)
+bool ES8388::setOutputVolume(OutSel outSel, uint8_t vol)
 {
   if (vol > 33)
     vol = 33;
   bool res = true;
-  if (_outSel == OUTALL || _outSel == OUT1)
+  if (outSel == OutSel::OUTALL || outSel == OutSel::OUT1)
   {
     res &= write_reg(ES8388_REG::DACCONTROL24, vol); // LOUT1VOL
     res &= write_reg(ES8388_REG::DACCONTROL25, vol); // ROUT1VOL
   }
-  else if (_outSel == OUTALL || _outSel == OUT2)
+  else if (outSel == OutSel::OUTALL || outSel == OutSel::OUT2)
   {
     res &= write_reg(ES8388_REG::DACCONTROL26, vol); // LOUT2VOL
     res &= write_reg(ES8388_REG::DACCONTROL27, vol); // ROUT2VOL

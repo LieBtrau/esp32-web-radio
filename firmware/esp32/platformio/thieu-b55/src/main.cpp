@@ -1,10 +1,24 @@
+/**
+ * @file main.cpp
+ *
+ * @author Christoph Tack (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2023-12-02
+ *
+ * @copyright Copyright (c) 2023
+ *
+ * AI-Thinker ESP32-A1S Audio Kit:
+ *  DAC1 connected to PA, DAC2 connected to headphone jack
+ */
 #include "Arduino.h"
 #include "WiFi.h"
 #include "Audio.h"
-// #include "FS.h"
 #include "ES8388.h"
 #include "wifi_credentials.h"
 #include <Bounce2.h>
+
+static const char *TAG = "main";
 
 // I2S, pin defs from https://github.com/pschatzmann/arduino-audiokit/blob/main/src/audio_board/ai_thinker_es8388_5.h
 #define PIN_I2S_AUDIO_KIT_MCLK 0
@@ -30,23 +44,23 @@ static Audio audio;
 static ES8388 dac(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO, 400000);
 
 // Instantiate a Bounce object
-Bounce debouncer1 = Bounce(); 
+Bounce debouncer1 = Bounce();
 
 // Instantiate another Bounce object
-Bounce debouncer2 = Bounce(); 
+Bounce debouncer2 = Bounce();
 
 void setup()
 {
-  Serial.begin(115200);
+  ESP_LOGD(TAG, "\r\nBuild %s, utc: %lu\r\n", COMMIT_HASH, CURRENT_TIME);
 
   // Setup the first button with an internal pull-up :
-  pinMode(PIN_KEY2,INPUT_PULLUP);
+  pinMode(PIN_KEY2, INPUT_PULLUP);
   // After setting up the button, setup the Bounce instance :
   debouncer1.attach(PIN_KEY2);
   debouncer1.interval(5); // interval in ms
-  
-   // Setup the second button with an internal pull-up :
-  pinMode(PIN_KEY3,INPUT_PULLUP);
+
+  // Setup the second button with an internal pull-up :
+  pinMode(PIN_KEY3, INPUT_PULLUP);
   // After setting up the button, setup the Bounce instance :
   debouncer2.attach(PIN_KEY3);
   debouncer2.interval(5); // interval in ms
@@ -54,7 +68,7 @@ void setup()
   WiFi.mode(WIFI_STA);
   while (!dac.init())
   {
-    Serial.println("dac verbindinding mislukt");
+    ESP_LOGE(TAG, "Error initializing ES8388 chip");
     delay(1000);
   }
   pinMode(PIN_PA_ENABLE, OUTPUT);
@@ -63,11 +77,11 @@ void setup()
   while (WiFi.status() != WL_CONNECTED)
     delay(1500);
   audio.setPinout(PIN_I2S_AUDIO_KIT_BCK, PIN_I2S_AUDIO_KIT_WS, PIN_I2S_AUDIO_KIT_DATA_OUT);
-  audio.setVolume(21);                                                                                // default 0...21
-                                                                                                      //  or alternative
-                                                                                                      //  audio.setVolumeSteps(64); // max 255
-                                                                                                      //  audio.setVolume(63);
-                                                                                                      //
+  audio.setVolume(21); // default 0...21
+                       //  or alternative
+                       //  audio.setVolumeSteps(64); // max 255
+                       //  audio.setVolume(63);
+                       //
   //  *** radio streams ***
   //  audio.connecttohost("http://mcrscast.mcr.iol.pt/cidadefm");                                         // mp3
   //  audio.connecttohost("http://www.wdr.de/wdrlive/media/einslive.m3u");                                // m3u
@@ -99,11 +113,13 @@ void loop()
   audio.loop();
   debouncer1.update();
   debouncer2.update();
-  if(debouncer1.fell()) {
+  if (debouncer1.fell())
+  {
     Serial.println("Button 1 pressed!");
-    audio.connecttohost("http://loveradiolegaspi.radioca.st/;");                                         // mp3
+    audio.connecttohost("http://loveradiolegaspi.radioca.st/;"); // mp3
   }
-  if(debouncer2.fell()) {
+  if (debouncer2.fell())
+  {
     Serial.println("Button 2 pressed!");
     audio.connecttohost("http://streamnavs.net:8089/live"); // aac
   }
