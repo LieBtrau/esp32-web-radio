@@ -71,41 +71,16 @@ void setup()
     ESP_LOGE(TAG, "Error initializing ES8388 chip");
     delay(1000);
   }
+  dac.setOutputVolume(ES8388::OutSel::OUTALL, 15);
   pinMode(PIN_PA_ENABLE, OUTPUT);
   digitalWrite(PIN_PA_ENABLE, HIGH);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
+  {
     delay(1500);
+  }
   audio.setPinout(PIN_I2S_AUDIO_KIT_BCK, PIN_I2S_AUDIO_KIT_WS, PIN_I2S_AUDIO_KIT_DATA_OUT);
-  audio.setVolume(21); // default 0...21
-                       //  or alternative
-                       //  audio.setVolumeSteps(64); // max 255
-                       //  audio.setVolume(63);
-                       //
-  //  *** radio streams ***
-  //  audio.connecttohost("http://mcrscast.mcr.iol.pt/cidadefm");                                         // mp3
-  //  audio.connecttohost("http://www.wdr.de/wdrlive/media/einslive.m3u");                                // m3u
-  //  audio.connecttohost("https://stream.srg-ssr.ch/rsp/aacp_48.asx");                                   // asx
-  //  audio.connecttohost("http://tuner.classical102.com/listen.pls");                                    // pls
-  //  audio.connecttohost("http://stream.radioparadise.com/flac");                                        // flac
-  //  audio.connecttohost("http://stream.sing-sing-bis.org:8000/singsingFlac");                           // flac (ogg)
-  //  audio.connecttohost("http://s1.knixx.fm:5347/dein_webradio_vbr.opus");                              // opus (ogg)
-  //  audio.connecttohost("http://stream2.dancewave.online:8080/dance.ogg");                              // vorbis (ogg)
-  //  audio.connecttohost("http://26373.live.streamtheworld.com:3690/XHQQ_FMAAC/HLSTS/playlist.m3u8");    // HLS
-  //  audio.connecttohost("http://eldoradolive02.akamaized.net/hls/live/2043453/eldorado/master.m3u8");   // HLS (ts)
-  //  *** web files ***
-  //  audio.connecttohost("https://github.com/schreibfaul1/ESP32-audioI2S/raw/master/additional_info/Testfiles/Pink-Panther.wav");        // wav
-  //  audio.connecttohost("https://github.com/schreibfaul1/ESP32-audioI2S/raw/master/additional_info/Testfiles/Santiano-Wellerman.flac"); // flac
-  //  audio.connecttohost("https://github.com/schreibfaul1/ESP32-audioI2S/raw/master/additional_info/Testfiles/Olsen-Banden.mp3");        // mp3
-  //  audio.connecttohost("https://github.com/schreibfaul1/ESP32-audioI2S/raw/master/additional_info/Testfiles/Miss-Marple.m4a");         // m4a (aac)
-  //  audio.connecttohost("https://github.com/schreibfaul1/ESP32-audioI2S/raw/master/additional_info/Testfiles/Collide.ogg");             // vorbis
-  //  audio.connecttohost("https://github.com/schreibfaul1/ESP32-audioI2S/raw/master/additional_info/Testfiles/sample.opus");             // opus
-  //  *** local files ***
-  //  audio.connecttoFS(SD, "/test.wav");     // SD
-  //  audio.connecttoFS(SD_MMC, "/test.wav"); // SD_MMC
-  //  audio.connecttoFS(SPIFFS, "/test.wav"); // SPIFFS
-
-  //  audio.connecttospeech("Wenn die Hunde schlafen, kann der Wolf gut Schafe stehlen.", "de"); // Google TTS
+  audio.connecttospeech("Hallo Marison, leuk dat je weer naar me wil luisteren. Hihi", "nl"); // Google TTS
 }
 
 void loop()
