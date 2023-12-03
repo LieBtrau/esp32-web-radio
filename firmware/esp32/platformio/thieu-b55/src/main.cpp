@@ -11,8 +11,6 @@
  * AI-Thinker ESP32-A1S Audio Kit:
  *  DAC1 connected to PA, DAC2 connected to headphone jack
  * 
- * Husarnet:
- *  Test connection from linux PC with Husarnet daemon running: `ping6 esp32-web-radio`
  */
 #include "Arduino.h"
 #include "WiFi.h"
@@ -20,7 +18,7 @@
 #include "ES8388.h"
 #include "wifi_credentials.h"
 #include <Bounce2.h>
-#include <Husarnet.h>
+#include "RemoteMonitor.h"
 
 static const char *TAG = "main";
 
@@ -48,6 +46,9 @@ static Audio audio;
 static ES8388 dac(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO, 400000);
 
 const char *hostName = "esp32-web-radio";
+RemoteMonitor remoteMonitor(hostName);
+Command set_led;
+static void set_led_callback(cmd* c);
 
 // Instantiate a Bounce object
 Bounce debouncer1 = Bounce();
@@ -57,6 +58,7 @@ Bounce debouncer2 = Bounce();
 
 void setup()
 {
+  Serial.begin(115200);
   ESP_LOGI(TAG, "\r\nBuild %s, utc: %lu\r\n", COMMIT_HASH, CURRENT_TIME);
 
   // Setup the first button with an internal pull-up :
@@ -77,9 +79,9 @@ void setup()
   {
     delay(1500);
   }
-  Husarnet.join(HUSARNET_JOINCODE, hostName);
-  Husarnet.start();
-
+  remoteMonitor.start(HUSARNET_JOINCODE);
+  set_led = remoteMonitor.addCommand("set_led", set_led_callback);
+  set_led.addPosArg("state");
   while (!dac.init())
   {
     ESP_LOGE(TAG, "Error initializing ES8388 chip");
@@ -160,4 +162,11 @@ void audio_eof_speech(const char *info)
 {
   Serial.print("eof_speech  ");
   Serial.println(info);
+}
+
+void set_led_callback(cmd* c) {
+  Command cmd(c);
+
+  String state = cmd.getArg("state").getValue();
+  Serial.println(state);
 }
