@@ -116,13 +116,11 @@ void loop()
   {
     Serial.println("Button 1 pressed!");
 
-       char name[64];
-       char url[64];
-
+    String name, url;
     if (streamDB.getStream(streamIndex, name, url))
     {
-      ESP_LOGI(TAG, "Playing stream %s", name);
-      audio.connecttohost(url);
+      ESP_LOGI(TAG, "Playing stream: \"%s\"", name.c_str());
+      audio.connecttohost(url.c_str());
       streamIndex++;
       if (streamIndex >= streamDB.size())
       {

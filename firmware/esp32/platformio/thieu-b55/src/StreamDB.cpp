@@ -36,19 +36,13 @@ bool StreamDB::open(const char *dbFile)
     return true;
 }
 
-bool StreamDB::getStream(const int index, char *name, char *url)
+bool StreamDB::getStream(const int index, String& name, String& url)
 {
     if (index >= _streams.size())
     {
         return false;
     }
-    if (name != NULL)
-    {
-        strncpy(name, _streams[index]["name"].as<const char *>(), 64);
-    }
-    if (url != NULL)
-    {
-        strncpy(url, _streams[index]["url"].as<const char *>(), 64);
-    }
+    name = _streams[index]["name"].as<const char *>();
+    url = _streams[index]["url"].as<const char *>();
     return true;
 }
