@@ -25,7 +25,7 @@
     },
     {
         "name": "Barangay LS97.1",
-        "url": "https://magic.radioca.st/stream"
+        "url": "http://magic.radioca.st/stream"
     },
     {
         "name": "Hugot Radio 2.0",
@@ -54,7 +54,6 @@
     {
         "name": "VRT NWS",
         "url": "http://progressive-audio.vrtcdn.be/content/fixed/11_11niws-snip_lo.mp3"
-    
     }
     ]
 }
