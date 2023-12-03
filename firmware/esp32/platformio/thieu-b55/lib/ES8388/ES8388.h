@@ -45,7 +45,7 @@ public:
     OUT2,   // Select Line OUT L/R 2
     OUTALL, // Enable ALL
   };
-  ES8388(uint8_t _sda, uint8_t _scl, uint32_t _speed);
+  ES8388(uint8_t _sda, uint8_t _scl, uint32_t _speed = 400000);
   ~ES8388();
   bool init();
   bool identify(int sda, int scl, uint32_t frequency);

@@ -43,7 +43,7 @@ static const char *TAG = "main";
 #define PIN_KEY6 5
 
 static Audio audio;
-static ES8388 dac(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO, 400000);
+static ES8388 dac(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO);
 
 const char *hostName = "esp32-web-radio";
 RemoteMonitor remoteMonitor(hostName);
