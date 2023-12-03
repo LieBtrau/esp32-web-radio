@@ -4,6 +4,11 @@
 
  * Husarnet:
  *  Test connection from linux PC (on which Husarnet daemon is running): `ping6 esp32-web-radio`
+ *  `$ socat - tcp:esp32-web-radio:8001
+ * set_led 1
+ * ok
+ * set_led 0
+ * ok
 */
 
 #pragma once
