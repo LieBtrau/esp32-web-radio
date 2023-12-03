@@ -2,15 +2,16 @@
 
 void taskInternetCLI(void *parameter);
 static RemoteMonitor *pRemoteMonitor = NULL;
+static const char *TAG = "RemoteMonitor";
 
-RemoteMonitor::RemoteMonitor(const char *hostName) : _server(CLI_PORT), _hostName(hostName)
+RemoteMonitor::RemoteMonitor(const char *hostName, const int cliPort) : _hostName(hostName), _server(cliPort)
 {
     pRemoteMonitor = this;
 }
 
 void RemoteMonitor::start(const char *joinCode)
 {
-    //Husarnet.selfHostedSetup("default");
+    Husarnet.selfHostedSetup("default");
     Husarnet.join(joinCode, _hostName);
     Husarnet.start();
     TaskHandle_t xHandle = NULL;
@@ -31,7 +32,7 @@ Command RemoteMonitor::addCommand(const char *name, void (*callback)(cmd *c))
 
 void taskInternetCLI(void *parameter)
 {
-    pRemoteMonitor->_server.begin(8001);
+    pRemoteMonitor->_server.begin();
 
     while (1)
     {

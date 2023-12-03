@@ -15,13 +15,13 @@ extern void taskInternetCLI(void *parameter);
 class RemoteMonitor
 {
 public:
-    RemoteMonitor(const char *hostName);
-    void start(const char* joinCode);
-    Command addCommand(const char* name, void (* callback)(cmd* c));
+    RemoteMonitor(const char *hostName, const int cliPort = 8001);
+    void start(const char *joinCode);
+    Command addCommand(const char *name, void (*callback)(cmd *c));
+
 private:
+    const char *_hostName;
     HusarnetServer _server;
     SimpleCLI _cli;
-    const int CLI_PORT = 8001;
-    const char *_hostName;
     friend void taskInternetCLI(void *parameter);
 };
