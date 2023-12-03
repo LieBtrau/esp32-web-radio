@@ -1,0 +1,60 @@
+{"streams":[
+    {
+        "name": "Bespren Radio",
+        "url": "http://streamnavs.net:8089/live"
+    },
+    {
+        "name": "Tunog Pinoy Power FM",
+        "url": "http://streamnavs.net:8143/live"
+    },
+    {
+        "name": "Win Radio 107.9 Naga",
+        "url": "http://streamnavs.net:8161/stream"
+    },
+    {
+        "name": "94.7 Happy Radio",
+        "url": "http://stream-152.zeno.fm/2xk9xz3wpl2vv?zs=Pb9DJKxNRxmKiS4Pa6O9SQ"
+    },
+    {
+        "name": "DWAY Care 104.3",
+        "url": "http://sg-icecast.eradioportal.com:8000/febc_dway"
+    },
+    {
+        "name": "Love Radio",
+        "url": "http://loveradiolegaspi.radioca.st/;"
+    },
+    {
+        "name": "Barangay LS97.1",
+        "url": "https://magic.radioca.st/stream"
+    },
+    {
+        "name": "Hugot Radio 2.0",
+        "url": "http://cast3.asurahosting.com/proxy/istreamo/stream"
+    },
+    {
+        "name": "OK FM Legazpi",
+        "url": "http://server10.reliastream.com:8063/xstream"
+    },
+    {
+        "name": "JoeFM",
+        "url": "http://icecast-qmusicbe-cdp.triple-it.nl/joe.mp3"
+    },
+    {
+        "name": "QMusic",
+        "url": "http://icecast-qmusicbe-cdp.triple-it.nl/qmusic.mp3"
+    },
+    {
+        "name": "Radio Nostalgie",
+        "url": "http://25633.live.streamtheworld.com/NOSTALGIEWHATAFEELING.mp3"
+    },
+    {
+        "name": "MNM",
+        "url": "http://vrt.streamabc.net/vrt-mnm-mp3-64-4492886"
+    },
+    {
+        "name": "VRT NWS",
+        "url": "http://progressive-audio.vrtcdn.be/content/fixed/11_11niws-snip_lo.mp3"
+    
+    }
+    ]
+}

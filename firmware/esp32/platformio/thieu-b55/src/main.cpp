@@ -20,6 +20,7 @@
 #include <Bounce2.h>
 #include "RemoteMonitor.h"
 #include <WiFiMulti.h>
+#include "StreamDB.h"
 
 static const char *TAG = "main";
 
@@ -43,20 +44,19 @@ static const char *TAG = "main";
 #define PIN_KEY5 18
 #define PIN_KEY6 5
 
+const char *hostName = "esp32-web-radio";
+
 static Audio audio;
 static ES8388 dac(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO);
-
-const char *hostName = "esp32-web-radio";
-RemoteMonitor remoteMonitor(hostName);
-Command set_led;
+static RemoteMonitor remoteMonitor(hostName);
+static Command set_led;
 static void set_led_callback(cmd *c);
 static WiFiMulti wifiMulti;
+static StreamDB streamDB;
+static int streamIndex = 0;
 
 // Instantiate a Bounce object
 Bounce debouncer1 = Bounce();
-
-// Instantiate another Bounce object
-Bounce debouncer2 = Bounce();
 
 void setup()
 {
@@ -69,11 +69,14 @@ void setup()
   debouncer1.attach(PIN_KEY2);
   debouncer1.interval(5); // interval in ms
 
-  // Setup the second button with an internal pull-up :
-  pinMode(PIN_KEY3, INPUT_PULLUP);
-  // After setting up the button, setup the Bounce instance :
-  debouncer2.attach(PIN_KEY3);
-  debouncer2.interval(5); // interval in ms
+  if (!SPIFFS.begin())
+  {
+    ESP_LOGE(TAG, "Cannot mount SPIFFS volume...be sure to upload Filesystem Image before uploading the sketch");
+    while (1)
+      ;
+  }
+  streamDB.open("/streams.json");
+
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
   for (int i = 0; i < (sizeof(wifiNetworks) / sizeof(wifiNetworks[0])); i++)
@@ -109,16 +112,23 @@ void loop()
 {
   audio.loop();
   debouncer1.update();
-  debouncer2.update();
   if (debouncer1.fell())
   {
     Serial.println("Button 1 pressed!");
-    audio.connecttohost("http://loveradiolegaspi.radioca.st/;"); // mp3
-  }
-  if (debouncer2.fell())
-  {
-    Serial.println("Button 2 pressed!");
-    audio.connecttohost("http://streamnavs.net:8089/live"); // aac
+
+       char name[64];
+       char url[64];
+
+    if (streamDB.getStream(streamIndex, name, url))
+    {
+      ESP_LOGI(TAG, "Playing stream %s", name);
+      audio.connecttohost(url);
+      streamIndex++;
+      if (streamIndex >= streamDB.size())
+      {
+        streamIndex = 0;
+      }
+    }
   }
 }
 
