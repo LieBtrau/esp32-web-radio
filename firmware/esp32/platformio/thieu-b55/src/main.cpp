@@ -10,7 +10,7 @@
  *
  * AI-Thinker ESP32-A1S Audio Kit:
  *  DAC1 connected to PA, DAC2 connected to headphone jack
- * 
+ *
  */
 #include "Arduino.h"
 #include "WiFi.h"
@@ -19,6 +19,7 @@
 #include "wifi_credentials.h"
 #include <Bounce2.h>
 #include "RemoteMonitor.h"
+#include <WiFiMulti.h>
 
 static const char *TAG = "main";
 
@@ -48,7 +49,8 @@ static ES8388 dac(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO);
 const char *hostName = "esp32-web-radio";
 RemoteMonitor remoteMonitor(hostName);
 Command set_led;
-static void set_led_callback(cmd* c);
+static void set_led_callback(cmd *c);
+static WiFiMulti wifiMulti;
 
 // Instantiate a Bounce object
 Bounce debouncer1 = Bounce();
@@ -74,11 +76,19 @@ void setup()
   debouncer2.interval(5); // interval in ms
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED)
+  for (int i = 0; i < (sizeof(wifiNetworks) / sizeof(wifiNetworks[0])); i++)
   {
-    delay(1500);
+    wifiMulti.addAP(wifiNetworks[i][0], wifiNetworks[i][1]);
   }
+
+  uint8_t stat = WL_DISCONNECTED;
+  while (stat != WL_CONNECTED)
+  {
+    stat = wifiMulti.run();
+    Serial.printf("WiFi status: %d\r\n", (int)stat);
+    delay(100);
+  }
+
   remoteMonitor.start(HUSARNET_JOINCODE);
   set_led = remoteMonitor.addCommand("set_led", set_led_callback);
   set_led.addPosArg("state");
@@ -164,7 +174,8 @@ void audio_eof_speech(const char *info)
   Serial.println(info);
 }
 
-void set_led_callback(cmd* c) {
+void set_led_callback(cmd *c)
+{
   Command cmd(c);
 
   String state = cmd.getArg("state").getValue();

@@ -9,6 +9,8 @@
  * ok
  * set_led 0
  * ok
+ * 
+ * The problem is that the audio stream stops when a tcp connection to a client is opened.
 */
 
 #pragma once
