@@ -19,6 +19,7 @@
 #include "wifi_credentials.h"
 #include <Bounce2.h>
 #include "RemoteMonitor.h"
+#include "Webserver.h"
 #include <WiFiMulti.h>
 #include "StreamDB.h"
 
@@ -48,8 +49,9 @@ const char *hostName = "esp32-web-radio";
 
 static Audio audio;
 static ES8388 dac(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO);
-static RemoteMonitor remoteMonitor(hostName);
-static Command set_led;
+//static RemoteMonitor remoteMonitor(hostName);
+//static Command set_led;
+static Webserver remoteMonitor(hostName);
 static void set_led_callback(cmd *c);
 static WiFiMulti wifiMulti;
 static StreamDB streamDB;
@@ -93,8 +95,8 @@ void setup()
   }
 
   remoteMonitor.start(HUSARNET_JOINCODE);
-  set_led = remoteMonitor.addCommand("set_led", set_led_callback);
-  set_led.addPosArg("state");
+  // set_led = remoteMonitor.addCommand("set_led", set_led_callback);
+  // set_led.addPosArg("state");
   while (!dac.init())
   {
     ESP_LOGE(TAG, "Error initializing ES8388 chip");
