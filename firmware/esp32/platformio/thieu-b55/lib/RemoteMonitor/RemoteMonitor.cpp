@@ -56,6 +56,10 @@ void taskInternetCLI(void *parameter)
                         client.println("ok");
                     }
                 }
+                else
+                {
+                    delay(200);
+                }
             }
             client.stop();
             Serial.println("Client disconnected.");
