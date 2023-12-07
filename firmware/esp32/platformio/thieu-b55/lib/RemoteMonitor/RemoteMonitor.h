@@ -4,12 +4,16 @@
 
  * Husarnet:
  *  Test connection from linux PC (on which Husarnet daemon is running): `ping6 esp32-web-radio`
- *  `$ socat - tcp:esp32-web-radio:8001
+ * alternatively:
+ * `$ telnet esp32-web-radio 8001` (use Ctrl-Shift-5 (on AZERTY) to exit)
  * set_led 1
  * ok
  * set_led 0
  * ok
  * 
+ * This connection can also be routed to a serial port on the PC:
+ * `sudo socat -d -d pty,link=/dev/CUSTOMNAME,raw,echo=0,waitslave tcp:esp32-web-radio:8001 &`
+ * `sudo minicom -D /dev/CUSTOMNAME
  * The problem is that the audio stream stops when a tcp connection to a client is opened.
 */
 
