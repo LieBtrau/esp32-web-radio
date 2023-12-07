@@ -1,7 +1,7 @@
 {"streams":[
     {
         "name": "Bespren Radio",
-        "url": "http://streamnavs.net:8089/live"
+        "url": "http://streamnavs.net:8089/autodj"
     },
     {
         "name": "Tunog Pinoy Power FM",
@@ -53,7 +53,7 @@
     },
     {
         "name": "VRT NWS",
-        "url": "http://progressive-audio.vrtcdn.be/content/fixed/11_11niws-snip_lo.mp3"
+        "url": "http://progressive-audio.vrtcdn.be/content/fixed/11_11niws-snip_hi.mp3"
     }
     ]
 }
