@@ -30,7 +30,7 @@ bool StreamDB::open(const char *dbFile)
 
     for (JsonVariant value : _streams)
     {
-        ESP_LOGI(TAG, "%s, %s", value["name"].as<const char *>(), value["url"].as<const char *>());
+        ESP_LOGD(TAG, "%s, %s", value["name"].as<const char *>(), value["url"].as<const char *>());
     }
 
     return true;
