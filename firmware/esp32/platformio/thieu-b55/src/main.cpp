@@ -22,41 +22,26 @@
 #include "Webserver.h"
 #include <WiFiMulti.h>
 #include "StreamDB.h"
+#include "RotaryEncoder.h"
+#include "pins.h"
 
 static const char *TAG = "main";
-
-// I2S, pin defs from https://github.com/pschatzmann/arduino-audiokit/blob/main/src/audio_board/ai_thinker_es8388_5.h
-#define PIN_I2S_AUDIO_KIT_MCLK 0
-#define PIN_I2S_AUDIO_KIT_BCK 27
-#define PIN_I2S_AUDIO_KIT_WS 25
-#define PIN_I2S_AUDIO_KIT_DATA_OUT 26
-#define PIN_I2S_AUDIO_KIT_DATA_IN 35
-
-// I2C, pin defs from https://github.com/pschatzmann/arduino-audiokit/blob/main/src/audio_board/ai_thinker_es8388_5.h
-#define I2C_MASTER_NUM I2C_NUM_0 /*!< I2C port number for master dev */
-#define I2C_MASTER_SCL_IO 32
-#define I2C_MASTER_SDA_IO 33
-
-#define PIN_PA_ENABLE 21
-#define PIN_KEY1 36
-#define PIN_KEY2 13
-#define PIN_KEY3 19
-#define PIN_KEY4 23
-#define PIN_KEY5 18
-#define PIN_KEY6 5
 
 const char *hostName = "esp32-web-radio";
 
 static Audio audio;
 static ES8388 dac(I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO);
-//static RemoteMonitor remoteMonitor(hostName);
-//static Command set_led;
+// static RemoteMonitor remoteMonitor(hostName);
+// static Command set_led;
 static Webserver remoteMonitor(hostName);
 static void set_led_callback(cmd *c);
 static WiFiMulti wifiMulti;
 static StreamDB streamDB;
 static int streamIndex = 0;
-
+static RotaryEncoder encoder(new Encoder(PIN_KEY3, PIN_IO22));
+static int volume = 5;
+const static int MIN_VOLUME = 0;
+const static int MAX_VOLUME = 33;
 // Instantiate a Bounce object
 Bounce debouncer1 = Bounce();
 
@@ -102,7 +87,7 @@ void setup()
     ESP_LOGE(TAG, "Error initializing ES8388 chip");
     delay(1000);
   }
-  dac.setOutputVolume(ES8388::OutSel::OUTALL, 5);
+  dac.setOutputVolume(ES8388::OutSel::OUTALL, volume);
   pinMode(PIN_PA_ENABLE, OUTPUT);
   digitalWrite(PIN_PA_ENABLE, HIGH);
 
@@ -113,6 +98,19 @@ void setup()
 void loop()
 {
   audio.loop();
+  switch (encoder.rotary_encoder_update())
+  {
+  case RotaryEncoder::TURN_DOWN:
+    volume = max(MIN_VOLUME, volume - 1);
+    dac.setOutputVolume(ES8388::OutSel::OUTALL, volume);
+    break;
+  case RotaryEncoder::TURN_UP:
+    volume = min(MAX_VOLUME, volume + 1);
+    dac.setOutputVolume(ES8388::OutSel::OUTALL, volume);
+    break;
+  default:
+    break;
+  }
   debouncer1.update();
   if (debouncer1.fell())
   {
