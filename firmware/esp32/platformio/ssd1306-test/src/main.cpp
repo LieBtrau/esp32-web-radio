@@ -26,7 +26,9 @@ void setup() {
   oled.begin(&Adafruit128x64, I2C_ADDRESS);
 #endif // RST_PIN >= 0
 
-  oled.setFont(Adafruit5x7);
+  //oled.setFont(Adafruit5x7);
+  //oled.setFont(Wendy3x5);
+  oled.setFont(TimesNewRoman13);
 
   uint32_t m = micros();
   oled.clear();
