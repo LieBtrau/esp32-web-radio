@@ -1,7 +1,5 @@
-#include <Arduino.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
 #include <Adafruit_SSD1305.h>
+#include "pins.h"
 
 static const char *TAG = "main";
 TwoWire i2c = TwoWire(1);
@@ -201,7 +199,7 @@ void testdrawline() {
 
 void setup() {
   ESP_LOGI(TAG, "\r\nBuild %s, utc: %lu\r\n", COMMIT_HASH, CURRENT_TIME);
-  i2c.begin(18, 23, 100000);
+  i2c.begin(PIN_SDA, PIN_SCL, 100000);
   Serial.println("SSD1305 OLED test");
   
   if ( ! display.begin(0x3C) ) {
