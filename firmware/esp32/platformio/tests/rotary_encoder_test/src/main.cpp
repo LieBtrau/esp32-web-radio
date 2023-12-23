@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include "RotaryEncoder.h"
 
-#define PIN_KEY3 19
-#define PIN_IO22 22
+const uint8_t PIN_S1 = 36;
+const uint8_t PIN_S2 = 39;
 
 static const char *TAG = "main";
-static Encoder encoder1(PIN_KEY3, PIN_IO22);
+static Encoder encoder1(PIN_S1, PIN_S2);
 static RotaryEncoder encoder(&encoder1);
 
 void setup()
