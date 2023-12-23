@@ -1,8 +1,7 @@
 #include <Arduino.h>
 #include "RotaryEncoder.h"
+#include "pins.h"
 
-const uint8_t PIN_S1 = 36;
-const uint8_t PIN_S2 = 39;
 
 static const char *TAG = "main";
 static Encoder encoder1(PIN_S1, PIN_S2);
