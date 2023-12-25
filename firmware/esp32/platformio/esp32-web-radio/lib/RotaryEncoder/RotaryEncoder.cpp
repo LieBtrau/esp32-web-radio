@@ -1,11 +1,23 @@
 #include "RotaryEncoder.h"
 
-RotaryEncoder::RotaryEncoder(Encoder *aRotaryEncoder) : _myEncoder(aRotaryEncoder)
+RotaryEncoder::RotaryEncoder(Encoder *aRotaryEncoder, int const switchPin) : _myEncoder(aRotaryEncoder), _switchPin(switchPin)
 {
 }
 
 RotaryEncoder::~RotaryEncoder()
 {
+}
+
+bool RotaryEncoder::init()
+{
+    if(_switchPin < 0)
+    {
+        return true;
+    }
+    pinMode(_switchPin, INPUT_PULLUP);
+    _momentarySwitch.attach(_switchPin);
+    _momentarySwitch.interval(5);
+    return true;
 }
 
 /**
@@ -15,6 +27,14 @@ RotaryEncoder::~RotaryEncoder()
  */
 RotaryEncoder::ROTARY_ENCODER_STATE RotaryEncoder::rotary_encoder_update()
 {
+    if(_switchPin >= 0)
+    {
+        _momentarySwitch.update();
+        if(_momentarySwitch.fell())
+        {
+            return BUTTON_FELL;
+        }
+    }
     // 2 state-step needed before updating value.  This avoids updating value in internotch states.
     long newPosition = _myEncoder->read() >> 1; // ignore the last bit of the state
 
