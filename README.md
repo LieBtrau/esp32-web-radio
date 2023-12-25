@@ -3,7 +3,7 @@
 Here you'll find the electronics design and firmware of a web radio based on the ESP32 microcontroller.
 
 ## Design goals
-* Use the enclosure of a cheap clone of the Tivolli Model One radio. 
+* Use the enclosure of a "Tivolli Model One" lookalike radio. 
 * Use the original speaker
 * USB powered
 * Easy to use : two knobs and a button
