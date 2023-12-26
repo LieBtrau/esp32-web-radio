@@ -36,13 +36,25 @@ bool StreamDB::open(const char *dbFile)
     return true;
 }
 
-bool StreamDB::getStream(const int index, String& name, String& url)
+bool StreamDB::getName(int index, String& name)
 {
-    if (index >= _streams.size())
+    if (index < _streams.size())
     {
-        return false;
+        name = _streams[index]["name"].as<String>();
+        return true;
     }
-    name = _streams[index]["name"].as<const char *>();
-    url = _streams[index]["url"].as<const char *>();
-    return true;
+    return false;
+}
+
+bool StreamDB::getStream(const char* name, String& url)
+{
+    for (JsonVariant value : _streams)
+    {
+        if (strcmp(value["name"].as<String>().c_str(), name) == 0)
+        {
+            url = value["url"].as<String>();
+            return true;
+        }
+    }
+    return false;
 }

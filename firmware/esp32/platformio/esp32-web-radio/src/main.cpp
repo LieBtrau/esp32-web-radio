@@ -15,7 +15,6 @@
 #include "Arduino.h"
 #include "WiFi.h"
 #include "wifi_credentials.h"
-
 #include "RemoteMonitor.h"
 #include "Webserver.h"
 #include <WiFiMulti.h>
@@ -23,7 +22,9 @@
 #include "RotaryEncoder.h"
 #include "pins.h"
 #include "Music.h"
-#include "SPIFFS.h"
+#include <Adafruit_SSD1305.h>
+#include "OLED_Renderer.h"
+#include "ChannelMenu.h"
 
 static const char *TAG = "main";
 static const char *hostName = "esp32-web-radio";
@@ -33,16 +34,20 @@ static Music musicPlayer;
 // static Command set_led;
 static Webserver remoteMonitor(hostName);
 static void set_led_callback(cmd *c);
+static void onChannelSelected(const char *name);
 static WiFiMulti wifiMulti;
 static StreamDB streamDB;
-static int streamIndex = 0;
 static RotaryEncoder volumeKnob(new Encoder(PIN_ENC1_S1, PIN_ENC1_S2), PIN_ENC1_KEY);
 static RotaryEncoder channelKnob(new Encoder(PIN_ENC2_S1, PIN_ENC2_S2), PIN_ENC2_KEY);
+static Adafruit_SSD1305 display(128, 64, &Wire, -1);
+static OLED_Renderer renderer(display);
+static ChannelMenu channelMenu(&renderer, &channelKnob, onChannelSelected);
 
 void setup()
 {
     Serial.begin(115200);
     ESP_LOGI(TAG, "\r\nBuild %s, utc: %lu\r\n", COMMIT_HASH, CURRENT_TIME);
+    Wire.setPins(PIN_SDA, PIN_SCL);
 
     volumeKnob.init();
     channelKnob.init();
@@ -54,6 +59,14 @@ void setup()
             ;
     }
     streamDB.open("/streams.json");
+    for(int i=0; i<streamDB.size(); i++)
+    {
+        String name;
+        if(streamDB.getName(i, name))
+        {
+            channelMenu.addMenuItem(name.c_str());
+        }
+    }
 
     WiFi.disconnect();
     WiFi.mode(WIFI_STA);
@@ -78,14 +91,18 @@ void setup()
     {
         ESP_LOGE(TAG, "Error initializing music player");
     }
-
     musicPlayer.playSpeech("Hallo Marison, leuk dat je weer naar me wil luisteren. Hihi", "nl"); // Google TTS
+
+    if (!display.begin(0x3C, false))
+    {
+        ESP_LOGE(TAG, "Unable to initialize OLED");
+        return;
+    }
+    renderer.init();
 }
 
 void loop()
 {
-    String name, url;
-
     musicPlayer.update();
     switch (volumeKnob.rotary_encoder_update())
     {
@@ -96,31 +113,12 @@ void loop()
         musicPlayer.increaseVolume();
         break;
     case RotaryEncoder::BUTTON_FELL:
-        ESP_LOGI(TAG, "Button 1 pressed!");
+        ESP_LOGI(TAG, "Power off");
         break;
     default:
         break;
     }
-    switch (channelKnob.rotary_encoder_update())
-    {
-    case RotaryEncoder::TURN_DOWN:
-        streamIndex = streamIndex == 0 ? streamDB.size() - 1 : streamIndex - 1;
-        ESP_LOGI(TAG, "Channel knob turned down: %d", streamIndex);
-        break;
-    case RotaryEncoder::TURN_UP:
-        streamIndex = (streamIndex + 1) % streamDB.size();
-        ESP_LOGI(TAG, "Channel knob turned up: %d", streamIndex);
-        break;
-    case RotaryEncoder::BUTTON_FELL:
-        if (streamDB.getStream(streamIndex, name, url))
-        {
-            ESP_LOGI(TAG, "Playing stream: \"%s\"", name.c_str());
-            musicPlayer.startStream(url.c_str());
-        }
-        break;
-    default:
-        break;
-    }
+    channelMenu.loop();
 }
 
 void set_led_callback(cmd *c)
@@ -129,4 +127,20 @@ void set_led_callback(cmd *c)
 
     String state = cmd.getArg("state").getValue();
     Serial.println(state);
+}
+
+static void onChannelSelected(const char *name)
+{
+    String url;
+    
+    ESP_LOGI(TAG, "Selected channel: %s", name);
+    if(streamDB.getStream(name, url))
+    {
+        ESP_LOGI(TAG, "Playing stream: %s", url.c_str());
+        musicPlayer.startStream(url.c_str());
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Stream not found");
+    }
 }
