@@ -48,7 +48,13 @@ ChannelMenu::~ChannelMenu()
     free(_menuItems);
 }
 
-void ChannelMenu::loop()
+/**
+ * @brief Handle rotary encoder events
+ * 
+ * @return true Rotary encoder event occurred
+ * @return false no rotary encoder event occurred
+ */
+bool ChannelMenu::loop()
 {
     switch (channelKnob->rotary_encoder_update())
     {
@@ -62,9 +68,10 @@ void ChannelMenu::loop()
         _ms.select();
         break;
     default:
-        return;
+        return false;
     }
     _ms.display();
+    return true;
 }
 
 void on_item_selected(MenuComponent *p_menu_component)

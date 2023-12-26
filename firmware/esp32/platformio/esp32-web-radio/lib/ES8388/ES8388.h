@@ -54,6 +54,7 @@ public:
   bool inputSelect(insel_t sel);
   bool DACmute(bool mute);
   uint8_t getOutputVolume();
+  uint8_t getMaxVolume() const;
   bool setOutputVolume(OutSel outSel, uint8_t vol);
   uint8_t getInputGain();
   bool setInputGain(uint8_t gain);

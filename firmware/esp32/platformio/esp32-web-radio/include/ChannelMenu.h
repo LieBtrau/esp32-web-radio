@@ -8,7 +8,7 @@ public:
     ChannelMenu(MenuComponentRenderer* my_renderer, RotaryEncoder* my_rotary_encoder, void (*callback)(const char*));
     ~ChannelMenu();
     void addMenuItem(const char *name);
-    void loop();
+    bool loop();
 
 private:
     MenuSystem _ms;

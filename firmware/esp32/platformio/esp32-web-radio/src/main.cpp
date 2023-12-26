@@ -15,7 +15,7 @@
 #include "Arduino.h"
 #include "WiFi.h"
 #include "wifi_credentials.h"
-#include "RemoteMonitor.h"
+//#include "RemoteMonitor.h"
 #include "Webserver.h"
 #include <WiFiMulti.h>
 #include "StreamDB.h"
@@ -25,6 +25,7 @@
 #include <Adafruit_SSD1305.h>
 #include "OLED_Renderer.h"
 #include "ChannelMenu.h"
+#include "AsyncDelay.h"
 
 static const char *TAG = "main";
 static const char *hostName = "esp32-web-radio";
@@ -32,9 +33,10 @@ static const char *hostName = "esp32-web-radio";
 static Music musicPlayer;
 // static RemoteMonitor remoteMonitor(hostName);
 // static Command set_led;
-static Webserver remoteMonitor(hostName);
-static void set_led_callback(cmd *c);
+// static Webserver remoteMonitor(hostName);
+// static void set_led_callback(cmd *c);
 static void onChannelSelected(const char *name);
+static void onVolumeChanged(uint8_t volume, uint8_t maxVolume);
 static WiFiMulti wifiMulti;
 static StreamDB streamDB;
 static RotaryEncoder volumeKnob(new Encoder(PIN_ENC1_S1, PIN_ENC1_S2), PIN_ENC1_KEY);
@@ -42,6 +44,7 @@ static RotaryEncoder channelKnob(new Encoder(PIN_ENC2_S1, PIN_ENC2_S2), PIN_ENC2
 static Adafruit_SSD1305 display(128, 64, &Wire, -1);
 static OLED_Renderer renderer(display);
 static ChannelMenu channelMenu(&renderer, &channelKnob, onChannelSelected);
+static AsyncDelay screenTimeout;
 
 void setup()
 {
@@ -83,7 +86,7 @@ void setup()
         delay(100);
     }
 
-    remoteMonitor.start(HUSARNET_JOINCODE);
+    // remoteMonitor.start(HUSARNET_JOINCODE);
     // set_led = remoteMonitor.addCommand("set_led", set_led_callback);
     // set_led.addPosArg("state");
 
@@ -99,6 +102,7 @@ void setup()
         return;
     }
     renderer.init();
+    screenTimeout.start(5000, AsyncDelay::MILLIS);
 }
 
 void loop()
@@ -108,9 +112,13 @@ void loop()
     {
     case RotaryEncoder::TURN_DOWN:
         musicPlayer.decreaseVolume();
+        onVolumeChanged(musicPlayer.getVolume(), musicPlayer.getMaxValue());
+        screenTimeout.restart();
         break;
     case RotaryEncoder::TURN_UP:
         musicPlayer.increaseVolume();
+        onVolumeChanged(musicPlayer.getVolume(), musicPlayer.getMaxValue());
+        screenTimeout.restart();
         break;
     case RotaryEncoder::BUTTON_FELL:
         ESP_LOGI(TAG, "Power off");
@@ -118,16 +126,25 @@ void loop()
     default:
         break;
     }
-    channelMenu.loop();
+    if(channelMenu.loop())
+    {
+        screenTimeout.restart();
+    }
+    if(screenTimeout.isExpired())
+    {
+        screenTimeout.repeat();
+        display.clearDisplay();
+        display.display();
+    }
 }
 
-void set_led_callback(cmd *c)
-{
-    Command cmd(c);
+// void set_led_callback(cmd *c)
+// {
+//     Command cmd(c);
 
-    String state = cmd.getArg("state").getValue();
-    Serial.println(state);
-}
+//     String state = cmd.getArg("state").getValue();
+//     Serial.println(state);
+// }
 
 static void onChannelSelected(const char *name)
 {
@@ -143,4 +160,31 @@ static void onChannelSelected(const char *name)
     {
         ESP_LOGE(TAG, "Stream not found");
     }
+}
+
+void onVolumeChanged(uint8_t volume, uint8_t maxVolume)
+{
+    display.clearDisplay(); // clears the screen and buffer
+    display.setCursor(0, 0);
+    display.setTextSize(1);
+    display.setTextColor(WHITE, BLACK); // 'normal' text
+    display.println("Volume: ");
+    for(int i=0;i<maxVolume;i++)
+    {
+        if(i<=volume)
+        {
+            display.print(">");
+        }
+        else
+        {
+            display.print("-");
+        }
+    }
+    display.display();
+}
+
+void audio_showstreamtitle(const char *info)
+{
+    Serial.print("streamtitle ");
+    Serial.println(info);
 }

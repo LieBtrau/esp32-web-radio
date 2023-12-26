@@ -114,6 +114,24 @@ bool Music::decreaseVolume()
 #endif
 }
 
+uint8_t Music::getVolume() 
+{
+#ifdef ESP32_AUDIO_KIT
+    return _dac.getOutputVolume();
+#else
+    return _audio.getVolume();
+#endif
+}
+
+uint8_t Music::getMaxValue() const
+{
+#ifdef ESP32_AUDIO_KIT
+    return _dac.getMaxVolume();
+#else
+    return 21;
+#endif
+}
+
 // optional
 void audio_info(const char *info)
 {
@@ -135,11 +153,7 @@ void audio_showstation(const char *info)
     Serial.print("station     ");
     Serial.println(info);
 }
-void audio_showstreamtitle(const char *info)
-{
-    Serial.print("streamtitle ");
-    Serial.println(info);
-}
+
 void audio_bitrate(const char *info)
 {
     Serial.print("bitrate     ");

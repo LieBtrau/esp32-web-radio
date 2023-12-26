@@ -172,8 +172,7 @@ bool ES8388::DACmute(bool mute)
 // set output volume max is 33
 bool ES8388::setOutputVolume(OutSel outSel, uint8_t vol)
 {
-  if (vol > 33)
-    vol = 33;
+  vol = min(vol, getMaxVolume());
   bool res = true;
   if (outSel == OutSel::OUTALL || outSel == OutSel::OUT1)
   {
@@ -193,6 +192,11 @@ uint8_t ES8388::getOutputVolume()
   static uint8_t _reg;
   read_reg(ES8388_REG::DACCONTROL24, _reg);
   return _reg;
+}
+
+uint8_t ES8388::getMaxVolume() const
+{
+  return 33;
 }
 
 // set input gain max is 8 +24db
