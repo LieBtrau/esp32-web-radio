@@ -29,6 +29,7 @@
 
 static const char *TAG = "main";
 static const char *hostName = "esp32-web-radio";
+static const uint8_t SSD1305_ADDR = 0x3C;
 
 static Music musicPlayer;
 // static RemoteMonitor remoteMonitor(hostName);
@@ -96,7 +97,7 @@ void setup()
     }
     musicPlayer.playSpeech("Hallo Marison, leuk dat je weer naar me wil luisteren. Hihi", "nl"); // Google TTS
 
-    if (!display.begin(0x3C, false))
+    if (!display.begin(SSD1305_ADDR, false))
     {
         ESP_LOGE(TAG, "Unable to initialize OLED");
         return;
@@ -122,6 +123,7 @@ void loop()
         break;
     case RotaryEncoder::BUTTON_FELL:
         ESP_LOGI(TAG, "Power off");
+        musicPlayer.stopStream();
         break;
     default:
         break;
