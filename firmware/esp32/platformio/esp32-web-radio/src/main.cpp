@@ -15,8 +15,6 @@
 #include "Arduino.h"
 #include "WiFi.h"
 #include "wifi_credentials.h"
-//#include "RemoteMonitor.h"
-#include "Webserver.h"
 #include <WiFiMulti.h>
 #include "StreamDB.h"
 #include "RotaryEncoder.h"
@@ -28,17 +26,14 @@
 #include "AsyncDelay.h"
 
 static const char *TAG = "main";
-static const char *hostName = "esp32-web-radio";
 static const uint8_t SSD1305_ADDR = 0x3C;
 static const char* STREAMS_FILE = "/streams.json";
 
 static Music musicPlayer;
-// static RemoteMonitor remoteMonitor(hostName);
-// static Command set_led;
-// static Webserver remoteMonitor(hostName);
-// static void set_led_callback(cmd *c);
+
 static void onChannelSelected(const char *name);
 static void onVolumeChanged(uint8_t volume, uint8_t maxVolume);
+
 static WiFiMulti wifiMulti;
 static StreamDB streamDB;
 static RotaryEncoder volumeKnob(new Encoder(PIN_ENC1_S1, PIN_ENC1_S2), PIN_ENC1_KEY);
@@ -51,7 +46,6 @@ static char* selectedChannel = nullptr;
 
 void setup()
 {
-    Serial.begin(115200);
     ESP_LOGI(TAG, "\r\nBuild %s, utc: %lu\r\n", COMMIT_HASH, CURRENT_TIME);
     Wire.setPins(PIN_SDA, PIN_SCL);
 
@@ -89,10 +83,6 @@ void setup()
         delay(100);
     }
 
-    // remoteMonitor.start(HUSARNET_JOINCODE);
-    // set_led = remoteMonitor.addCommand("set_led", set_led_callback);
-    // set_led.addPosArg("state");
-
     if (!musicPlayer.init(I2S_BCLK, I2S_LRC, I2S_DOUT))
     {
         ESP_LOGE(TAG, "Error initializing music player");
@@ -126,8 +116,8 @@ void loop()
         screenTimeout.restart();
         break;
     case RotaryEncoder::BUTTON_FELL:
-        ESP_LOGI(TAG, "Power off");
         musicPlayer.stopStream();
+        musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
         if(!streamDB.save(STREAMS_FILE))
         {
             ESP_LOGE(TAG, "Failed to save stream database");
@@ -147,14 +137,6 @@ void loop()
         display.display();
     }
 }
-
-// void set_led_callback(cmd *c)
-// {
-//     Command cmd(c);
-
-//     String state = cmd.getArg("state").getValue();
-//     Serial.println(state);
-// }
 
 static void onChannelSelected(const char *name)
 {
