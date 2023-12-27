@@ -4,10 +4,17 @@ static const char *TAG = "OLED_Renderer";
 
 bool OLED_Renderer::init()
 {
-    display.display(); 
+    display.display();
     delay(1000);
     display.clearDisplay(); // clears the screen and buffer
+    display.setCursor(0, 0);
+    display.setTextSize(1);
+    display.setTextColor(WHITE, BLACK); // 'normal' text
+    display.cp437(true);
+    display.setTextWrap(true); // Doesn't work, so we'll do it manually
     display.display();
+
+    screenTimeout.start(5000, AsyncDelay::MILLIS);
     return true;
 }
 
@@ -92,4 +99,41 @@ void OLED_Renderer::render_numeric_menu_item(NumericMenuItem const &menu_item) c
 
 void OLED_Renderer::render_menu(Menu const &menu) const
 {
+}
+
+void OLED_Renderer::screenSaver(bool menuActive)
+{
+    if(menuActive)
+    {
+        screenTimeout.restart();
+        return;
+    }
+    if (screenTimeout.isExpired())
+    {
+        screenTimeout.repeat(); // avoids executing this endlessly when screen is off
+        display.clearDisplay();
+        display.display();
+    }
+}
+
+void OLED_Renderer::render_volume(uint8_t volume, uint8_t maxVolume)
+{
+    display.clearDisplay(); // clears the screen and buffer
+    display.setCursor(0, 0);
+    display.setTextSize(1);
+    display.setTextColor(WHITE, BLACK); // 'normal' text
+    display.println("Volume: ");
+    for (int i = 0; i < maxVolume; i++)
+    {
+        if (i <= volume)
+        {
+            display.print('\xDB');
+        }
+        else
+        {
+            display.print('\xB0');
+        }
+    }
+    display.display();
+    screenTimeout.restart();
 }
