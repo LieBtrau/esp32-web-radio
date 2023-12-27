@@ -18,6 +18,7 @@ public:
     void update();
     bool increaseVolume();
     bool decreaseVolume();
+    bool setVolume(const uint8_t volume);
     uint8_t getVolume();
     uint8_t getMaxValue() const;
 

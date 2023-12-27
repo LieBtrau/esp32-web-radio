@@ -92,25 +92,30 @@ bool Music::increaseVolume()
 {
 #ifdef ESP32_AUDIO_KIT
     uint8_t new_volume = _dac.getOutputVolume() + 1;
-    _dac.setOutputVolume(ES8388::OutSel::OUTALL, new_volume);
-    return new_volume == _dac.getOutputVolume();
 #else
     uint8_t new_volume = _audio.getVolume() + 1;
-    _audio.setVolume(new_volume);
-    return new_volume == _audio.getVolume();
 #endif
+    return setVolume(new_volume);
 }
 
 bool Music::decreaseVolume()
 {
 #ifdef ESP32_AUDIO_KIT
     uint8_t new_volume = _dac.getOutputVolume() > 0 ? dac.getOutputVolume() - 1 : 0;
-    _dac.setOutputVolume(ES8388::OutSel::OUTALL, new_volume);
-    return new_volume == _dac.getOutputVolume();
 #else
     uint8_t new_volume = _audio.getVolume() > 0 ? _audio.getVolume() - 1 : 0;
-    _audio.setVolume(new_volume);
-    return new_volume == _audio.getVolume();
+#endif
+    return setVolume(new_volume);
+}
+
+bool Music::setVolume(const uint8_t volume)
+{
+#ifdef ESP32_AUDIO_KIT
+    _dac.setOutputVolume(ES8388::OutSel::OUTALL, volume);
+    return volume == _dac.getOutputVolume();
+#else
+    _audio.setVolume(volume);
+    return volume == _audio.getVolume();
 #endif
 }
 

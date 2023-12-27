@@ -76,7 +76,6 @@ bool ChannelMenu::loop()
 
 void on_item_selected(MenuComponent *p_menu_component)
 {
-    ESP_LOGI(TAG, "Selected menu item: %s", p_menu_component->get_name());
     if(onChannelSelected != nullptr)
     {
         onChannelSelected(p_menu_component->get_name());

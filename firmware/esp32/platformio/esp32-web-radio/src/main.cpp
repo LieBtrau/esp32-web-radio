@@ -30,6 +30,7 @@
 static const char *TAG = "main";
 static const char *hostName = "esp32-web-radio";
 static const uint8_t SSD1305_ADDR = 0x3C;
+static const char* STREAMS_FILE = "/streams.json";
 
 static Music musicPlayer;
 // static RemoteMonitor remoteMonitor(hostName);
@@ -46,6 +47,7 @@ static Adafruit_SSD1305 display(128, 64, &Wire, -1);
 static OLED_Renderer renderer(display);
 static ChannelMenu channelMenu(&renderer, &channelKnob, onChannelSelected);
 static AsyncDelay screenTimeout;
+static char* selectedChannel = nullptr;
 
 void setup()
 {
@@ -62,7 +64,7 @@ void setup()
         while (1)
             ;
     }
-    streamDB.open("/streams.json");
+    streamDB.open(STREAMS_FILE);
     for(int i=0; i<streamDB.size(); i++)
     {
         String name;
@@ -114,27 +116,33 @@ void loop()
     case RotaryEncoder::TURN_DOWN:
         musicPlayer.decreaseVolume();
         onVolumeChanged(musicPlayer.getVolume(), musicPlayer.getMaxValue());
+        streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
         screenTimeout.restart();
         break;
     case RotaryEncoder::TURN_UP:
         musicPlayer.increaseVolume();
         onVolumeChanged(musicPlayer.getVolume(), musicPlayer.getMaxValue());
+        streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
         screenTimeout.restart();
         break;
     case RotaryEncoder::BUTTON_FELL:
         ESP_LOGI(TAG, "Power off");
         musicPlayer.stopStream();
+        if(!streamDB.save(STREAMS_FILE))
+        {
+            ESP_LOGE(TAG, "Failed to save stream database");
+        }
         break;
     default:
         break;
     }
     if(channelMenu.loop())
     {
+        // Keep screen on as long as user is interacting with the menu
         screenTimeout.restart();
     }
     if(screenTimeout.isExpired())
     {
-        screenTimeout.repeat();
         display.clearDisplay();
         display.display();
     }
@@ -151,12 +159,19 @@ void loop()
 static void onChannelSelected(const char *name)
 {
     String url;
+    uint8_t volume;
     
     ESP_LOGI(TAG, "Selected channel: %s", name);
+    if(streamDB.getVolume(name, volume))
+    {
+        ESP_LOGI(TAG, "Setting volume to: %d", volume);
+        musicPlayer.setVolume(volume);
+    }
     if(streamDB.getStream(name, url))
     {
         ESP_LOGI(TAG, "Playing stream: %s", url.c_str());
         musicPlayer.startStream(url.c_str());
+        selectedChannel = (char*) name;
     }
     else
     {
