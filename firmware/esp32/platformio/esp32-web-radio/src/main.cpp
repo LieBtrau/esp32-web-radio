@@ -94,6 +94,7 @@ void setup()
         ESP_LOGE(TAG, "Unable to initialize OLED");
         return;
     }
+    display.cp437(true);
     renderer.init();
     screenTimeout.start(5000, AsyncDelay::MILLIS);
 }
@@ -133,6 +134,7 @@ void loop()
     }
     if(screenTimeout.isExpired())
     {
+        screenTimeout.repeat(); // avoids executing this endlessly when screen is off
         display.clearDisplay();
         display.display();
     }
@@ -172,11 +174,11 @@ void onVolumeChanged(uint8_t volume, uint8_t maxVolume)
     {
         if(i<=volume)
         {
-            display.print(">");
+            display.print('\xDB');
         }
         else
         {
-            display.print("-");
+            display.print('\xB0');
         }
     }
     display.display();
@@ -184,6 +186,27 @@ void onVolumeChanged(uint8_t volume, uint8_t maxVolume)
 
 void audio_showstreamtitle(const char *info)
 {
-    Serial.print("streamtitle ");
-    Serial.println(info);
+    const char* SPLIT=" - ";
+    char artist[40], song_title[40];
+    char* splitstart = strstr(info, SPLIT);
+    ESP_LOGI(TAG, "Stream info: %s", info);
+    
+    if(splitstart != NULL)
+    {
+        // Get artist
+        int artist_length = splitstart - info;
+        strncpy(artist, info, min(40, artist_length));
+        artist[artist_length] = '\0';
+        ESP_LOGI(TAG, "Artist : %s.\r\n", artist);
+        
+        // Get song title
+        int song_length = strlen(info) - strlen(artist) - strlen(SPLIT);
+        if(song_length > 0)
+        {
+            strncpy(song_title, splitstart + strlen(SPLIT), min(40, song_length));
+            song_title[song_length] = '\0';
+            ESP_LOGI(TAG, "Song : %s.\r\n", song_title);
+        }
+    }
+
 }

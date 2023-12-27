@@ -1,7 +1,7 @@
 
 #include "Webserver.h"
 #include "RemoteMonitor.h"
-#include "wifi_credentials.h"
+#include "husarnet_id.h"
 
 static const char *TAG = "remoteControl";
 static const char *hostName = "esp32-web-radio";
