@@ -30,7 +30,7 @@ static const char *STREAMS_FILE = "/streams.json";
 
 static Music musicPlayer;
 
-static void onChannelSelected(const String& name);
+static void onChannelSelected(const String &name);
 
 static WiFiMulti wifiMulti;
 static StreamDB streamDB;
@@ -94,7 +94,7 @@ void setup()
     renderer.init();
 
     String selectedChannel;
-    if(streamDB.getCurrentStream(selectedChannel))
+    if (streamDB.getCurrentStream(selectedChannel))
     {
         ESP_LOGI(TAG, "Resuming stream: %s", selectedChannel);
         onChannelSelected(selectedChannel.c_str());
@@ -105,23 +105,16 @@ void loop()
 {
     String selectedChannel;
     musicPlayer.update();
+    bool volumeChanged = false;
     switch (volumeKnob.rotary_encoder_update())
     {
     case RotaryEncoder::TURN_DOWN:
         musicPlayer.decreaseVolume();
-        renderer.render_volume(musicPlayer.getVolume(), musicPlayer.getMaxValue());
-        if(streamDB.getCurrentStream(selectedChannel))
-        {
-            streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
-        }
+        volumeChanged = true;
         break;
     case RotaryEncoder::TURN_UP:
         musicPlayer.increaseVolume();
-        renderer.render_volume(musicPlayer.getVolume(), musicPlayer.getMaxValue());
-        if(streamDB.getCurrentStream(selectedChannel))
-        {
-            streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
-        }
+        volumeChanged = true;
         break;
     case RotaryEncoder::BUTTON_FELL:
         renderer.clear();
@@ -135,11 +128,20 @@ void loop()
     default:
         break;
     }
-    
+
+    if (volumeChanged)
+    {
+        renderer.render_volume(musicPlayer.getVolume(), musicPlayer.getMaxValue());
+        if (streamDB.getCurrentStream(selectedChannel))
+        {
+            streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
+        }
+    }
+
     renderer.screenSaver(channelMenu.loop());
 }
 
-static void onChannelSelected(const String& name)
+static void onChannelSelected(const String &name)
 {
     String url;
     uint8_t volume;
