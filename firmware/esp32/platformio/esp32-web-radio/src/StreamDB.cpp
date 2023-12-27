@@ -5,9 +5,9 @@
  *  Each stream has its own volume setting because some streams are louder than others.
  * @version 0.1
  * @date 2023-12-27
- * 
+ *
  * @copyright Copyright (c) 2023
- * 
+ *
  */
 
 #include "StreamDB.h"
@@ -16,7 +16,6 @@
 #include "SPIFFS.h"
 
 static const char *TAG = "streams";
-
 
 bool StreamDB::open(const char *dbFile)
 {
@@ -70,7 +69,7 @@ bool StreamDB::save(const char *dbFile)
     return true;
 }
 
-bool StreamDB::getName(int index, String& name)
+bool StreamDB::getName(int index, String &name) const
 {
     if (index < _streams.size())
     {
@@ -80,11 +79,11 @@ bool StreamDB::getName(int index, String& name)
     return false;
 }
 
-bool StreamDB::getStream(const char* name, String& url)
+bool StreamDB::getStream(const String& name, String &url) const
 {
     for (JsonVariant value : _streams)
     {
-        if (strcmp(value["name"].as<String>().c_str(), name) == 0)
+        if (value["name"].as<String>().compareTo(name) == 0)
         {
             url = value["url"].as<String>();
             return true;
@@ -93,11 +92,11 @@ bool StreamDB::getStream(const char* name, String& url)
     return false;
 }
 
-bool StreamDB::getVolume(const char* name, uint8_t& volume)
+bool StreamDB::getVolume(const String& name, uint8_t &volume) const
 {
     for (JsonVariant value : _streams)
     {
-        if (strcmp(value["name"].as<String>().c_str(), name) == 0)
+        if (value["name"].as<String>().compareTo(name) == 0)
         {
             volume = value["volume"].as<uint8_t>();
             return true;
@@ -106,11 +105,11 @@ bool StreamDB::getVolume(const char* name, uint8_t& volume)
     return false;
 }
 
-bool StreamDB::setVolume(const char* name, uint8_t volume)
+bool StreamDB::setVolume(const String& name, uint8_t volume)
 {
     for (JsonVariant value : _streams)
     {
-        if (strcmp(value["name"].as<String>().c_str(), name) == 0)
+        if (value["name"].as<String>().compareTo(name) == 0)
         {
             value["volume"] = volume;
             return true;
@@ -119,3 +118,13 @@ bool StreamDB::setVolume(const char* name, uint8_t volume)
     return false;
 }
 
+bool StreamDB::getCurrentStream(String &name) const
+{
+    name = _doc["CurrentStream"].as<String>();
+    return name.length() > 0;
+}
+
+void StreamDB::setCurrentStream(const String& name)
+{
+    _doc["CurrentStream"] = name;
+}

@@ -3,9 +3,9 @@
 static const char *TAG = "ChannelMenu";
 
 static void on_item_selected(MenuComponent *p_menu_component);
-static void (*onChannelSelected)(const char*) = nullptr;
+static void (*onChannelSelected)(const String&) = nullptr;
 
-ChannelMenu::ChannelMenu(MenuComponentRenderer *my_renderer, RotaryEncoder *my_rotary_encoder, void (*callback)(const char*)) : _ms(*my_renderer), channelKnob(my_rotary_encoder)
+ChannelMenu::ChannelMenu(MenuComponentRenderer *my_renderer, RotaryEncoder *my_rotary_encoder, void (*callback)(const String&)) : _ms(*my_renderer), channelKnob(my_rotary_encoder)
 {
     onChannelSelected = callback;
 }

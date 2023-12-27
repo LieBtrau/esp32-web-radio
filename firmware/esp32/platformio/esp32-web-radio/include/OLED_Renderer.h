@@ -10,6 +10,7 @@ class OLED_Renderer : public MenuComponentRenderer
 public:
     OLED_Renderer(Adafruit_SSD1305 &display) : display(display) {}
     bool init();
+    void clear() const;
     void render(Menu const &menu) const;
     void render_menu_item(MenuItem const &menu_item) const;
     void render_back_menu_item(BackMenuItem const &menu_item) const;

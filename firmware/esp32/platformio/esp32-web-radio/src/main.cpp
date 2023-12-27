@@ -30,7 +30,7 @@ static const char *STREAMS_FILE = "/streams.json";
 
 static Music musicPlayer;
 
-static void onChannelSelected(const char *name);
+static void onChannelSelected(const String& name);
 
 static WiFiMulti wifiMulti;
 static StreamDB streamDB;
@@ -39,8 +39,6 @@ static RotaryEncoder channelKnob(new Encoder(PIN_ENC2_S1, PIN_ENC2_S2), PIN_ENC2
 static Adafruit_SSD1305 display(128, 64, &Wire, -1);
 static OLED_Renderer renderer(display);
 static ChannelMenu channelMenu(&renderer, &channelKnob, onChannelSelected);
-
-static char *selectedChannel = nullptr;
 
 void setup()
 {
@@ -94,24 +92,39 @@ void setup()
     }
 
     renderer.init();
+
+    String selectedChannel;
+    if(streamDB.getCurrentStream(selectedChannel))
+    {
+        ESP_LOGI(TAG, "Resuming stream: %s", selectedChannel);
+        onChannelSelected(selectedChannel.c_str());
+    }
 }
 
 void loop()
 {
+    String selectedChannel;
     musicPlayer.update();
     switch (volumeKnob.rotary_encoder_update())
     {
     case RotaryEncoder::TURN_DOWN:
         musicPlayer.decreaseVolume();
         renderer.render_volume(musicPlayer.getVolume(), musicPlayer.getMaxValue());
-        streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
+        if(streamDB.getCurrentStream(selectedChannel))
+        {
+            streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
+        }
         break;
     case RotaryEncoder::TURN_UP:
         musicPlayer.increaseVolume();
         renderer.render_volume(musicPlayer.getVolume(), musicPlayer.getMaxValue());
-        streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
+        if(streamDB.getCurrentStream(selectedChannel))
+        {
+            streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
+        }
         break;
     case RotaryEncoder::BUTTON_FELL:
+        renderer.clear();
         musicPlayer.stopStream();
         musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
         if (!streamDB.save(STREAMS_FILE))
@@ -126,12 +139,12 @@ void loop()
     renderer.screenSaver(channelMenu.loop());
 }
 
-static void onChannelSelected(const char *name)
+static void onChannelSelected(const String& name)
 {
     String url;
     uint8_t volume;
 
-    ESP_LOGI(TAG, "Selected channel: %s", name);
+    ESP_LOGI(TAG, "Selected channel: %s", name.c_str());
     if (streamDB.getVolume(name, volume))
     {
         ESP_LOGI(TAG, "Setting volume to: %d", volume);
@@ -141,7 +154,7 @@ static void onChannelSelected(const char *name)
     {
         ESP_LOGI(TAG, "Playing stream: %s", url.c_str());
         musicPlayer.startStream(url.c_str());
-        selectedChannel = (char *)name;
+        streamDB.setCurrentStream(name);
     }
     else
     {

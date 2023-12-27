@@ -5,7 +5,7 @@
 class ChannelMenu
 {
 public:
-    ChannelMenu(MenuComponentRenderer* my_renderer, RotaryEncoder* my_rotary_encoder, void (*callback)(const char*));
+    ChannelMenu(MenuComponentRenderer* my_renderer, RotaryEncoder* my_rotary_encoder, void (*callback)(const String& name));
     ~ChannelMenu();
     void addMenuItem(const char *name);
     bool loop();

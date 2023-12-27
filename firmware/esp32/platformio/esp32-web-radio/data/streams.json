@@ -63,11 +63,12 @@
         "name": "MNM",
         "url": "http://vrt.streamabc.net/vrt-mnm-mp3-64-4492886",
         "volume": 5
-    },
-    {
+    }
+    ],
+    "CurrentStream": "",
+    "NewsStream": {
         "name": "VRT NWS",
         "url": "http://progressive-audio.vrtcdn.be/content/fixed/11_11niws-snip_hi.mp3",
         "volume": 5
     }
-    ]
 }

@@ -18,6 +18,12 @@ bool OLED_Renderer::init()
     return true;
 }
 
+void OLED_Renderer::clear() const
+{
+    display.clearDisplay();
+    display.display();
+}
+
 void OLED_Renderer::render(Menu const &menu) const
 {
     int active_item = 0;
