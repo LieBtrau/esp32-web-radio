@@ -16,6 +16,7 @@ public:
     bool startStream(const char *url, bool stopCurrentAudio = true);
     bool stopStream();
     void update();
+    bool isPlaying();
     bool increaseVolume();
     bool decreaseVolume();
     bool setVolume(const uint8_t volume);

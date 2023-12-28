@@ -14,7 +14,7 @@
  * This connection can also be routed to a serial port on the PC:
  * `sudo socat -d -d pty,link=/dev/CUSTOMNAME,raw,echo=0,waitslave tcp:esp32-web-radio:8001 &`
  * `sudo minicom -D /dev/CUSTOMNAME
- * The problem is that the audio stream stops when a tcp connection to a client is opened.
+ * The problem is that the audio stream stops when a tcp connection to a client is opened. (should be fixed by the added delays in the taskInternetCLI function)
 */
 
 #pragma once

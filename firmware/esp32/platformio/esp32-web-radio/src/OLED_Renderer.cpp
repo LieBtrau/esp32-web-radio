@@ -14,7 +14,6 @@ bool OLED_Renderer::init()
     display.setTextWrap(true); // Doesn't work, so we'll do it manually
     display.display();
 
-    screenTimeout.start(5000, AsyncDelay::MILLIS);
     return true;
 }
 
@@ -82,7 +81,7 @@ void OLED_Renderer::render_menu_item(MenuItem const &menu_item) const
 {
     display.print(menu_item.get_name());
 
-    // Padding
+    // Padding for inverted text
     int len = MENU_COLS - strlen(menu_item.get_name());
     if (len > 0)
     {
@@ -107,27 +106,32 @@ void OLED_Renderer::render_menu(Menu const &menu) const
 {
 }
 
-void OLED_Renderer::screenSaver(bool menuActive)
+void OLED_Renderer::screenSaver()
 {
-    if(menuActive)
-    {
-        screenTimeout.restart();
-        return;
-    }
-    if (screenTimeout.isExpired())
-    {
-        screenTimeout.repeat(); // avoids executing this endlessly when screen is off
-        display.clearDisplay();
-        display.display();
-    }
+    display.clearDisplay();
+    display.display();
 }
 
-void OLED_Renderer::render_volume(uint8_t volume, uint8_t maxVolume)
+/**
+ * @brief Prepare the OLED display to render a channel, but does not display it, so you can add more info
+ * 
+ * @param channel 
+ */
+void OLED_Renderer::render_channel(const String& channel)
 {
     display.clearDisplay(); // clears the screen and buffer
     display.setCursor(0, 0);
     display.setTextSize(1);
     display.setTextColor(WHITE, BLACK); // 'normal' text
+    display.println(channel);
+    display.drawFastHLine(0, 10, 128, WHITE);
+    display.println();
+}
+
+void OLED_Renderer::render_volume(uint8_t volume, uint8_t maxVolume, String& channelName)
+{
+    render_channel(channelName);
+
     display.println("Volume: ");
     for (int i = 0; i < maxVolume; i++)
     {
@@ -141,5 +145,4 @@ void OLED_Renderer::render_volume(uint8_t volume, uint8_t maxVolume)
         }
     }
     display.display();
-    screenTimeout.restart();
 }

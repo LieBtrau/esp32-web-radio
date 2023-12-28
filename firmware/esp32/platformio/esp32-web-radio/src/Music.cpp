@@ -2,6 +2,8 @@
 
 static const char *TAG = "Music";
 
+extern void showstreamtitle(const String& artist, const String& song_title);
+
 Music::Music(const int i2c_sda, const int i2c_scl, const int pin_PA_enable)
 #ifdef ESP32_AUDIO_KIT
     : _i2c_sda(i2c_sda), _i2c_scl(i2c_scl), _pin_PA_enable(pin_PA_enable), _dac(ES8388(_i2c_sda, _i2c_scl))
@@ -88,6 +90,11 @@ void Music::update()
     _audio.loop();
 }
 
+bool Music::isPlaying()
+{
+    return _audio.isRunning();
+}
+
 bool Music::increaseVolume()
 {
 #ifdef ESP32_AUDIO_KIT
@@ -136,6 +143,46 @@ uint8_t Music::getMaxValue() const
     return 21;
 #endif
 }
+
+/**
+ * @brief Callback function for audio library
+ * 
+ * @param info string that contains the stream info : artist - song title
+ */
+void audio_showstreamtitle(const char *info)
+{
+    const char *SPLIT = " - ";
+    char artist[40]={0}, song_title[40]={0};
+    char *splitstart = strstr(info, SPLIT);
+
+    ESP_LOGI(TAG, "Stream info: %s", info);
+
+    if (splitstart != NULL)
+    {
+        // Get artist
+        int artist_length = splitstart - info;
+        strncpy(artist, info, min(40, artist_length));
+        artist[artist_length] = '\0';
+        ESP_LOGI(TAG, "Artist : %s.\r\n", artist);
+
+        // Get song title
+        int song_length = strlen(info) - strlen(artist) - strlen(SPLIT);
+        if (song_length > 0)
+        {
+            strncpy(song_title, splitstart + strlen(SPLIT), min(40, song_length));
+            song_title[song_length] = '\0';
+            ESP_LOGI(TAG, "Song : %s.\r\n", song_title);
+
+            showstreamtitle(String(artist), String(song_title));
+        }
+    }
+    else
+    {
+        ESP_LOGI(TAG, "No split found");
+        showstreamtitle(String(info), String(""));
+    }
+}
+
 
 // optional
 void audio_info(const char *info)

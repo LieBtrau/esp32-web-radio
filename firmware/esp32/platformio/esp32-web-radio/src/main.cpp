@@ -27,9 +27,13 @@
 static const char *TAG = "main";
 static const uint8_t SSD1305_ADDR = 0x3C;
 static const char *STREAMS_FILE = "/streams.json";
+static const int DEFAULT_SCREEN_TIMEOUT = 10000;
+static const int VOLUME_SCREEN_TIMEOUT = 2000;
+static const int CHANNEL_SCREEN_TIMEOUT = 5000;
 
 static Music musicPlayer;
 
+void showstreamtitle(const String& artist, const String& song_title); // non-static, must be visible to Music.cpp
 static void onChannelSelected(const String &name);
 
 static WiFiMulti wifiMulti;
@@ -39,6 +43,9 @@ static RotaryEncoder channelKnob(new Encoder(PIN_ENC2_S1, PIN_ENC2_S2), PIN_ENC2
 static Adafruit_SSD1305 display(128, 64, &Wire, -1);
 static OLED_Renderer renderer(display);
 static ChannelMenu channelMenu(&renderer, &channelKnob, onChannelSelected);
+static AsyncDelay screenTimeout;
+static bool personDetected = true; // to be replaced by PIR sensor
+static String last_artist="", last_song_title="";
 
 void setup()
 {
@@ -90,7 +97,6 @@ void setup()
         ESP_LOGE(TAG, "Unable to initialize OLED");
         return;
     }
-
     renderer.init();
 
     String selectedChannel;
@@ -99,12 +105,16 @@ void setup()
         ESP_LOGI(TAG, "Resuming stream: %s", selectedChannel);
         onChannelSelected(selectedChannel.c_str());
     }
+
+    screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
 }
 
 void loop()
 {
     String selectedChannel;
-    musicPlayer.update();
+
+    musicPlayer.update(); // play audio
+
     bool volumeChanged = false;
     switch (volumeKnob.rotary_encoder_update())
     {
@@ -129,22 +139,40 @@ void loop()
         break;
     }
 
-    if (volumeChanged)
+    if (volumeChanged && streamDB.getCurrentStream(selectedChannel))
     {
-        renderer.render_volume(musicPlayer.getVolume(), musicPlayer.getMaxValue());
-        if (streamDB.getCurrentStream(selectedChannel))
-        {
-            streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
-        }
+        screenTimeout.start(VOLUME_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
+        streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
+        renderer.render_volume(musicPlayer.getVolume(), musicPlayer.getMaxValue(), selectedChannel);
     }
 
-    renderer.screenSaver(channelMenu.loop());
+    if (channelMenu.loop())
+    {
+        screenTimeout.start(CHANNEL_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
+    }
+
+    if (screenTimeout.isExpired())
+    {
+        if(personDetected && musicPlayer.isPlaying())
+        {
+            // todo : avoid rewriting the same text over and over again
+            showstreamtitle(last_artist, last_song_title);
+        }
+        else
+        {
+            screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
+            renderer.screenSaver();
+        }
+    }
 }
 
 static void onChannelSelected(const String &name)
 {
     String url;
     uint8_t volume;
+
+    last_artist = "";
+    last_song_title = "";
 
     ESP_LOGI(TAG, "Selected channel: %s", name.c_str());
     if (streamDB.getVolume(name, volume))
@@ -164,7 +192,19 @@ static void onChannelSelected(const String &name)
     }
 }
 
-void audio_showstreamtitle(const char *info)
+void showstreamtitle(const String& artist, const String& song_title)
 {
-    renderer.render_song(info);
+    screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
+
+    String channel;
+    if (streamDB.getCurrentStream(channel))
+    {
+        if (artist != last_artist || song_title != last_song_title)
+        {
+            ESP_LOGI(TAG, "Artist: %s, Song: %s", artist.c_str(), song_title.c_str());
+            last_artist = artist;
+            last_song_title = song_title;
+        }
+        renderer.render_song(channel, artist, song_title);
+    }
 }
