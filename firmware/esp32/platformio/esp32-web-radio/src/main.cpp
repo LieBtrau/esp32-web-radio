@@ -27,13 +27,13 @@
 static const char *TAG = "main";
 static const uint8_t SSD1305_ADDR = 0x3C;
 static const char *STREAMS_FILE = "/streams.json";
-static const int DEFAULT_SCREEN_TIMEOUT = 10000;
+static const int DEFAULT_SCREEN_TIMEOUT = 240000;
 static const int VOLUME_SCREEN_TIMEOUT = 2000;
 static const int CHANNEL_SCREEN_TIMEOUT = 5000;
 
 static Music musicPlayer;
 
-void showstreamtitle(const String& artist, const String& song_title); // non-static, must be visible to Music.cpp
+void showstreamtitle(const String &artist, const String &song_title); // non-static, must be visible to Music.cpp
 static void onChannelSelected(const String &name);
 
 static WiFiMulti wifiMulti;
@@ -45,7 +45,8 @@ static OLED_Renderer renderer(display);
 static ChannelMenu channelMenu(&renderer, &channelKnob, onChannelSelected);
 static AsyncDelay screenTimeout;
 static bool personDetected = true; // to be replaced by PIR sensor
-static String last_artist="", last_song_title="";
+static String last_artist = "", last_song_title = "";
+static volatile bool new_song_title = false;
 
 void setup()
 {
@@ -111,6 +112,7 @@ void setup()
 
 void loop()
 {
+    static bool need_refresh = false;
     String selectedChannel;
 
     musicPlayer.update(); // play audio
@@ -134,6 +136,13 @@ void loop()
         {
             ESP_LOGE(TAG, "Failed to save stream database");
         }
+        while(musicPlayer.isPlaying())
+        {
+            musicPlayer.update();
+        }
+        ESP_LOGI(TAG, "Going to sleep");
+        delay(1000);
+        esp_deep_sleep_start();
         break;
     default:
         break;
@@ -141,6 +150,7 @@ void loop()
 
     if (volumeChanged && streamDB.getCurrentStream(selectedChannel))
     {
+        need_refresh = true;
         screenTimeout.start(VOLUME_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
         streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
         renderer.render_volume(musicPlayer.getVolume(), musicPlayer.getMaxValue(), selectedChannel);
@@ -148,15 +158,22 @@ void loop()
 
     if (channelMenu.loop())
     {
+        need_refresh = true;
         screenTimeout.start(CHANNEL_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
     }
 
-    if (screenTimeout.isExpired())
+    if (screenTimeout.isExpired() || new_song_title)
     {
-        if(personDetected && musicPlayer.isPlaying())
+        if ((personDetected && musicPlayer.isPlaying() && need_refresh) || new_song_title)
         {
-            // todo : avoid rewriting the same text over and over again
-            showstreamtitle(last_artist, last_song_title);
+            need_refresh = false;
+            new_song_title = false;
+            screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
+
+            if (streamDB.getCurrentStream(selectedChannel))
+            {
+                renderer.render_song(selectedChannel, last_artist, last_song_title);
+            }
         }
         else
         {
@@ -192,19 +209,9 @@ static void onChannelSelected(const String &name)
     }
 }
 
-void showstreamtitle(const String& artist, const String& song_title)
+void showstreamtitle(const String &artist, const String &song_title)
 {
-    screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
-
-    String channel;
-    if (streamDB.getCurrentStream(channel))
-    {
-        if (artist != last_artist || song_title != last_song_title)
-        {
-            ESP_LOGI(TAG, "Artist: %s, Song: %s", artist.c_str(), song_title.c_str());
-            last_artist = artist;
-            last_song_title = song_title;
-        }
-        renderer.render_song(channel, artist, song_title);
-    }
+    new_song_title = true;
+    last_artist = artist;
+    last_song_title = song_title;
 }

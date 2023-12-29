@@ -26,6 +26,7 @@ void OLED_Renderer::clear() const
 void OLED_Renderer::render(Menu const &menu) const
 {
     int active_item = 0;
+
     display.clearDisplay();
     display.setCursor(0, 0);
     display.setTextSize(1);
@@ -114,10 +115,10 @@ void OLED_Renderer::screenSaver()
 
 /**
  * @brief Prepare the OLED display to render a channel, but does not display it, so you can add more info
- * 
- * @param channel 
+ *
+ * @param channel
  */
-void OLED_Renderer::render_channel(const String& channel)
+void OLED_Renderer::render_channel(const String &channel)
 {
     display.clearDisplay(); // clears the screen and buffer
     display.setCursor(0, 0);
@@ -128,7 +129,7 @@ void OLED_Renderer::render_channel(const String& channel)
     display.println();
 }
 
-void OLED_Renderer::render_volume(uint8_t volume, uint8_t maxVolume, String& channelName)
+void OLED_Renderer::render_volume(uint8_t volume, uint8_t maxVolume, String &channelName)
 {
     render_channel(channelName);
 

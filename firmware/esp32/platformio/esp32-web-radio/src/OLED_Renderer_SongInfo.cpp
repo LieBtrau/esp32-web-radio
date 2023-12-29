@@ -1,9 +1,16 @@
 #include "OLED_Renderer.h"
 
-void OLED_Renderer::render_song(const String& channel, const String& artist, const String& song_title)
+/**
+ * @brief 
+ * e.g. "Zia Quizon · Jungee Marcelo · Jungee Marcelo - Bakit Hindi Ka Crush Ng Crush Mo?"
+ * @param channel 
+ * @param artist 
+ * @param song_title 
+ */
+void OLED_Renderer::render_song(const String &channel, const String &artist, const String &song_title)
 {
     render_channel(channel);
-    print(artist.c_str());    
+    print(artist.c_str());
     display.println();
     display.println();
     print(song_title.c_str());
@@ -14,9 +21,9 @@ void OLED_Renderer::render_song(const String& channel, const String& artist, con
 /**
  * @brief Print a string to the OLED display
  * Split in multiple lines if string is too long
- * 
+ *
  * Parsing is done using C string functions
- * 
+ *
  * @param str   String to print
  */
 void OLED_Renderer::print(const char *str) const
@@ -38,7 +45,7 @@ void OLED_Renderer::print(const char *str) const
         display.print(pch);
         display.print(' ');
         current_line_length += strlen(pch) + 1;
-        pch = strtok(NULL, " ,.-");        
+        pch = strtok(NULL, " ,.-");
         if (pch != NULL && current_line_length + strlen(pch) > MENU_COLS)
         {
             display.println();
