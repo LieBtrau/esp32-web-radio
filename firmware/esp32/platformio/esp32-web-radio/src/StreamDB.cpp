@@ -79,7 +79,7 @@ bool StreamDB::getName(int index, String &name) const
     return false;
 }
 
-bool StreamDB::getStream(const String& name, String &url) const
+bool StreamDB::getStream(const String &name, String &url) const
 {
     for (JsonVariant value : _streams)
     {
@@ -92,7 +92,7 @@ bool StreamDB::getStream(const String& name, String &url) const
     return false;
 }
 
-bool StreamDB::getVolume(const String& name, uint8_t &volume) const
+bool StreamDB::getVolume(const String &name, uint8_t &volume) const
 {
     for (JsonVariant value : _streams)
     {
@@ -105,7 +105,17 @@ bool StreamDB::getVolume(const String& name, uint8_t &volume) const
     return false;
 }
 
-bool StreamDB::setVolume(const String& name, uint8_t volume)
+bool StreamDB::setVolumeCurrentChannel(uint8_t volume)
+{
+    String name;
+    if (getCurrentStream(name))
+    {
+        return setVolume(name, volume);
+    }
+    return false;
+}
+
+bool StreamDB::setVolume(const String &name, uint8_t volume)
 {
     for (JsonVariant value : _streams)
     {
@@ -124,7 +134,20 @@ bool StreamDB::getCurrentStream(String &name) const
     return name.length() > 0;
 }
 
-void StreamDB::setCurrentStream(const String& name)
+void StreamDB::setCurrentStream(const String &name)
 {
-    _doc["CurrentStream"] = name;
+    for (JsonVariant value : _streams)
+    {
+        if (value["name"].as<String>().compareTo(name) == 0)
+        {
+            _lastStream = _doc["CurrentStream"].as<String>();
+            _doc["CurrentStream"] = name;
+            return;
+        }
+    }
+}
+
+void StreamDB::restoreLastStream()
+{
+    _doc["CurrentStream"] = _lastStream;
 }

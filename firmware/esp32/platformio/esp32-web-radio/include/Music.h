@@ -13,7 +13,7 @@ public:
 
     bool init(const uint8_t i2s_bck, const uint8_t i2s_ws, const uint8_t i2s_data_out);
     bool playSpeech(const char *text, const char *lang, bool isBlocking = false);
-    bool startStream(const char *url, bool stopCurrentAudio = true);
+    bool startStream(const char *url, const uint8_t volume, bool stopCurrentAudio = true);
     bool stopStream();
     void update();
     bool isPlaying();

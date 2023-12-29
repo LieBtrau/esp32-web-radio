@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "esp32-hal-uart.h": "c"
+        "esp32-hal-uart.h": "c",
+        "typeinfo": "cpp"
     }
 }

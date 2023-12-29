@@ -23,19 +23,20 @@
 #include <Adafruit_SSD1305.h>
 #include "OLED_Renderer.h"
 #include "ChannelMenu.h"
+#include "Bounce2.h"
 
 static const char *TAG = "main";
 static const uint8_t SSD1305_ADDR = 0x3C;
 static const char *STREAMS_FILE = "/streams.json";
+static const char *NEWS_STREAM = "VRT NWS";
 static const int DEFAULT_SCREEN_TIMEOUT = 240000;
 static const int VOLUME_SCREEN_TIMEOUT = 2000;
 static const int CHANNEL_SCREEN_TIMEOUT = 5000;
 
-static Music musicPlayer;
-
 void showstreamtitle(const String &artist, const String &song_title); // non-static, must be visible to Music.cpp
 static void onChannelSelected(const String &name);
 
+static Music musicPlayer;
 static WiFiMulti wifiMulti;
 static StreamDB streamDB;
 static RotaryEncoder volumeKnob(new Encoder(PIN_ENC1_S1, PIN_ENC1_S2), PIN_ENC1_KEY);
@@ -46,7 +47,161 @@ static ChannelMenu channelMenu(&renderer, &channelKnob, onChannelSelected);
 static AsyncDelay screenTimeout;
 static bool personDetected = true; // to be replaced by PIR sensor
 static String last_artist = "", last_song_title = "";
-static volatile bool new_song_title = false;
+static Bounce newsButton = Bounce();
+
+enum class RadioAction
+{
+    OFF,
+    PLAY_NEWS,
+    DEC_VOLUME,
+    INC_VOLUME,
+    SELECT_CHANNEL
+};
+
+enum class ScreenActions
+{
+    SLEEP,
+    SHOW_VOLUME,
+    SHOW_CHANNEL,
+    SHOW_SONG,
+    SHOW_NEWS
+};
+
+static ScreenActions screen_state = ScreenActions::SLEEP;
+
+enum class MusicActions
+{
+    NONE,
+    PLAY_NEWS,
+    PLAY_CHANNEL,
+    DEC_VOLUME,
+    INC_VOLUME,
+};
+
+static MusicActions music_state = MusicActions::NONE;
+
+void show(ScreenActions action)
+{
+    String selectedChannel;
+
+    switch (action)
+    {
+    case ScreenActions::SLEEP:
+        renderer.clear();
+        break;
+    case ScreenActions::SHOW_VOLUME:
+        screenTimeout.start(VOLUME_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
+        if (streamDB.getCurrentStream(selectedChannel))
+        {
+            renderer.render_volume(musicPlayer.getVolume(), musicPlayer.getMaxValue(), selectedChannel);
+        }
+        else
+        {
+            ESP_LOGE(TAG, "No current stream");
+            renderer.clear();
+        }
+        break;
+    case ScreenActions::SHOW_CHANNEL:
+        screenTimeout.start(CHANNEL_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
+        // Menu rendered automatically by channelMenu
+        break;
+    case ScreenActions::SHOW_SONG:
+        screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
+        if (streamDB.getCurrentStream(selectedChannel))
+        {
+            renderer.render_song(selectedChannel, last_artist, last_song_title);
+        }
+        else
+        {
+            ESP_LOGE(TAG, "No current stream");
+            renderer.clear();
+        }
+        break;
+    case ScreenActions::SHOW_NEWS:
+        screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
+        renderer.render_song(NEWS_STREAM, "", "");
+        break;
+    }
+    screen_state = action;
+}
+
+void music(MusicActions action)
+{
+    String selectedChannel = "";
+    String url = "";
+    uint8_t volume = 0;
+
+    switch (action)
+    {
+    case MusicActions::NONE:
+        break;
+    case MusicActions::PLAY_NEWS:
+        streamDB.setCurrentStream(NEWS_STREAM);
+        streamDB.getVolume(NEWS_STREAM, volume);
+        streamDB.getStream(NEWS_STREAM, url);
+        musicPlayer.startStream(url.c_str(), volume);
+        break;
+    case MusicActions::PLAY_CHANNEL:
+        if (streamDB.getCurrentStream(selectedChannel))
+        {
+            ESP_LOGI(TAG, "Selected channel: %s", selectedChannel.c_str());
+            streamDB.getVolume(selectedChannel, volume);
+            streamDB.getStream(selectedChannel, url);
+        }
+        musicPlayer.startStream(url.c_str(), volume);
+        break;
+    case MusicActions::DEC_VOLUME:
+        musicPlayer.decreaseVolume();
+        streamDB.setVolumeCurrentChannel(musicPlayer.getVolume());
+        break;
+    case MusicActions::INC_VOLUME:
+        musicPlayer.increaseVolume();
+        streamDB.setVolumeCurrentChannel(musicPlayer.getVolume());
+        break;
+    }
+
+    music_state = action;
+}
+
+void doAction(RadioAction action)
+{
+    switch (action)
+    {
+    case RadioAction::OFF:
+        show(ScreenActions::SLEEP);
+        musicPlayer.stopStream();
+        musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
+        if (!streamDB.save(STREAMS_FILE))
+        {
+            ESP_LOGE(TAG, "Failed to save stream database");
+        }
+        while (musicPlayer.isPlaying())
+        {
+            musicPlayer.update();
+        }
+        ESP_LOGI(TAG, "Going to sleep");
+        delay(1000);
+        esp_deep_sleep_start();
+        break;
+    case RadioAction::PLAY_NEWS:
+        music(MusicActions::PLAY_NEWS);
+        show(ScreenActions::SHOW_NEWS);
+        break;
+    case RadioAction::DEC_VOLUME:
+        music(MusicActions::DEC_VOLUME);
+        show(ScreenActions::SHOW_VOLUME);
+        break;
+    case RadioAction::INC_VOLUME:
+        music(MusicActions::INC_VOLUME);
+        show(ScreenActions::SHOW_VOLUME);
+        break;
+    case RadioAction::SELECT_CHANNEL:
+        music(MusicActions::PLAY_CHANNEL);
+        break;
+    default:
+        break;
+    }
+}
 
 void setup()
 {
@@ -66,8 +221,8 @@ void setup()
     for (int i = 0; i < streamDB.size(); i++)
     {
         String name;
-        if (streamDB.getName(i, name) && name.compareTo("VRT NWS") != 0)
-        //Don't add VRT NWS to the menu, it's a news channel, which only lasts for a few minutes
+        if (streamDB.getName(i, name) && name.compareTo(NEWS_STREAM) != 0)
+        // Don't add VRT NWS to the menu, it's a news channel, which only lasts for a few minutes
         {
             channelMenu.addMenuItem(name.c_str());
         }
@@ -109,110 +264,81 @@ void setup()
     }
 
     screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
+
+    newsButton.attach(PIN_NEWS_BTN, INPUT_PULLUP);
+    newsButton.interval(5);
 }
 
 void loop()
 {
-    static bool need_refresh = false;
-    String selectedChannel;
 
     musicPlayer.update(); // play audio
+    newsButton.update();
+    if (channelMenu.loop())
+    {
+        show(ScreenActions::SHOW_CHANNEL);
+    }
 
-    bool volumeChanged = false;
+    if (newsButton.fell() && music_state != MusicActions::PLAY_NEWS)
+    {
+        doAction(RadioAction::PLAY_NEWS);
+    }
     switch (volumeKnob.rotary_encoder_update())
     {
     case RotaryEncoder::TURN_DOWN:
-        musicPlayer.decreaseVolume();
-        volumeChanged = true;
+        doAction(RadioAction::DEC_VOLUME);
         break;
     case RotaryEncoder::TURN_UP:
-        musicPlayer.increaseVolume();
-        volumeChanged = true;
+        doAction(RadioAction::INC_VOLUME);
         break;
     case RotaryEncoder::BUTTON_FELL:
-        renderer.clear();
-        musicPlayer.stopStream();
-        musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
-        if (!streamDB.save(STREAMS_FILE))
-        {
-            ESP_LOGE(TAG, "Failed to save stream database");
-        }
-        while(musicPlayer.isPlaying())
-        {
-            musicPlayer.update();
-        }
-        ESP_LOGI(TAG, "Going to sleep");
-        delay(1000);
-        esp_deep_sleep_start();
+        doAction(RadioAction::OFF);
         break;
     default:
         break;
     }
 
-    if (volumeChanged && streamDB.getCurrentStream(selectedChannel))
+    if (music_state == MusicActions::PLAY_NEWS && !musicPlayer.isPlaying())
     {
-        need_refresh = true;
-        screenTimeout.start(VOLUME_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
-        streamDB.setVolume(selectedChannel, musicPlayer.getVolume());
-        renderer.render_volume(musicPlayer.getVolume(), musicPlayer.getMaxValue(), selectedChannel);
+        ESP_LOGI(TAG, "News finished");
+        streamDB.restoreLastStream();
+        doAction(RadioAction::SELECT_CHANNEL);
     }
 
-    if (channelMenu.loop())
+    if (screenTimeout.isExpired())
     {
-        need_refresh = true;
-        screenTimeout.start(CHANNEL_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
-    }
-
-    if (screenTimeout.isExpired() || new_song_title)
-    {
-        if ((personDetected && musicPlayer.isPlaying() && need_refresh) || new_song_title)
+        ESP_LOGI(TAG, "Screen timeout");
+        screenTimeout.repeat();
+        switch (screen_state)
         {
-            need_refresh = false;
-            new_song_title = false;
-            screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
-
-            if (streamDB.getCurrentStream(selectedChannel))
-            {
-                renderer.render_song(selectedChannel, last_artist, last_song_title);
-            }
-        }
-        else
-        {
-            screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
-            renderer.screenSaver();
+        case ScreenActions::SLEEP:
+            break;
+        case ScreenActions::SHOW_VOLUME:
+            show(ScreenActions::SHOW_SONG);
+            break;
+        case ScreenActions::SHOW_CHANNEL:
+            show(ScreenActions::SHOW_SONG);
+            break;
+        case ScreenActions::SHOW_SONG:
+            break;
+        case ScreenActions::SHOW_NEWS:
+            break;
         }
     }
 }
 
 static void onChannelSelected(const String &name)
 {
-    String url;
-    uint8_t volume;
-
+    ESP_LOGI(TAG, "Setting channel: %s", name.c_str());
+    streamDB.setCurrentStream(name);
     last_artist = "";
     last_song_title = "";
-
-    ESP_LOGI(TAG, "Selected channel: %s", name.c_str());
-    if (streamDB.getVolume(name, volume))
-    {
-        ESP_LOGI(TAG, "Setting volume to: %d", volume);
-        musicPlayer.setVolume(volume);
-    }
-    if (streamDB.getStream(name, url))
-    {
-        ESP_LOGI(TAG, "Playing stream: %s", url.c_str());
-        musicPlayer.startStream(url.c_str());
-        streamDB.setCurrentStream(name);
-    }
-    else
-    {
-        ESP_LOGE(TAG, "Stream not found");
-    }
+    doAction(RadioAction::SELECT_CHANNEL);
 }
 
 void showstreamtitle(const String &artist, const String &song_title)
 {
-    new_song_title = true;
     last_artist = artist;
     last_song_title = song_title;
+    show(ScreenActions::SHOW_SONG);
 }

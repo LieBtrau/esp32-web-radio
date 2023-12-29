@@ -65,11 +65,16 @@ bool Music::playSpeech(const char *text, const char *lang, bool isBlocking)
     }
 }
 
-bool Music::startStream(const char *url, bool stopCurrentAudio)
+bool Music::startStream(const char *url, const uint8_t volume,  bool stopCurrentAudio)
 {
     if (_audio.isRunning() && !stopCurrentAudio)
     {
         ESP_LOGW(TAG, "Already playing");
+        return false;
+    }
+    if(!setVolume(volume))
+    {
+        ESP_LOGE(TAG, "Error setting volume");
         return false;
     }
     return _audio.connecttohost(url);
@@ -183,48 +188,41 @@ void audio_showstreamtitle(const char *info)
     }
 }
 
+void audio_eof_mp3(const char *info)
+{
+    ESP_LOGI(TAG, "End of file");
+}
 
 // optional
 void audio_info(const char *info)
 {
-    Serial.print("info        ");
-    Serial.println(info);
+    ESP_LOGI(TAG, "info: %s", info);
 }
 void audio_id3data(const char *info)
 { // id3 metadata
-    Serial.print("id3data     ");
-    Serial.println(info);
+    ESP_LOGI(TAG, "id3data: %s", info);
 }
-void audio_eof_mp3(const char *info)
-{ // end of file
-    Serial.print("eof_mp3     ");
-    Serial.println(info);
-}
+
 void audio_showstation(const char *info)
 {
-    Serial.print("station     ");
-    Serial.println(info);
+    ESP_LOGI(TAG, "Station: %s", info);
 }
 
 void audio_bitrate(const char *info)
 {
-    Serial.print("bitrate     ");
-    Serial.println(info);
+    ESP_LOGI(TAG, "Bitrate: %s", info);
 }
 void audio_commercial(const char *info)
 { // duration in sec
-    Serial.print("commercial  ");
-    Serial.println(info);
+    ESP_LOGI(TAG, "commercial: %s", info);
 }
 void audio_icyurl(const char *info)
 { // homepage
-    Serial.print("icyurl      ");
-    Serial.println(info);
+    ESP_LOGI(TAG, "icyurl: %s", info);
 }
 void audio_lasthost(const char *info)
 { // stream URL played
-    Serial.print("lasthost    ");
-    Serial.println(info);
+    ESP_LOGI(TAG, "lasthost: %s", info);
 }
 void audio_eof_speech(const char *info)
 {

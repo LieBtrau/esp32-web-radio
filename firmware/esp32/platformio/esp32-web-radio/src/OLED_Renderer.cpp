@@ -21,6 +21,7 @@ void OLED_Renderer::clear() const
 {
     display.clearDisplay();
     display.display();
+    //display.sleep();
 }
 
 void OLED_Renderer::render(Menu const &menu) const
