@@ -8,8 +8,6 @@
  *
  * @copyright Copyright (c) 2023
  *
- * AI-Thinker ESP32-A1S Audio Kit:
- *  DAC1 connected to PA, DAC2 connected to headphone jack
  *
  */
 #include "Arduino.h"
@@ -48,15 +46,6 @@ static AsyncDelay screenTimeout;
 static bool personDetected = true; // to be replaced by PIR sensor
 static String last_artist = "", last_song_title = "";
 static Bounce newsButton = Bounce();
-
-enum class RadioAction
-{
-    OFF,
-    PLAY_NEWS,
-    DEC_VOLUME,
-    INC_VOLUME,
-    SELECT_CHANNEL
-};
 
 enum class ScreenActions
 {
@@ -163,45 +152,6 @@ void music(MusicActions action)
     music_state = action;
 }
 
-void doAction(RadioAction action)
-{
-    switch (action)
-    {
-    case RadioAction::OFF:
-        show(ScreenActions::SLEEP);
-        musicPlayer.stopStream();
-        musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
-        if (!streamDB.save(STREAMS_FILE))
-        {
-            ESP_LOGE(TAG, "Failed to save stream database");
-        }
-        while (musicPlayer.isPlaying())
-        {
-            musicPlayer.update();
-        }
-        ESP_LOGI(TAG, "Going to sleep");
-        delay(1000);
-        esp_deep_sleep_start();
-        break;
-    case RadioAction::PLAY_NEWS:
-        music(MusicActions::PLAY_NEWS);
-        show(ScreenActions::SHOW_NEWS);
-        break;
-    case RadioAction::DEC_VOLUME:
-        music(MusicActions::DEC_VOLUME);
-        show(ScreenActions::SHOW_VOLUME);
-        break;
-    case RadioAction::INC_VOLUME:
-        music(MusicActions::INC_VOLUME);
-        show(ScreenActions::SHOW_VOLUME);
-        break;
-    case RadioAction::SELECT_CHANNEL:
-        music(MusicActions::PLAY_CHANNEL);
-        break;
-    default:
-        break;
-    }
-}
 
 void setup()
 {
@@ -281,18 +231,34 @@ void loop()
 
     if (newsButton.fell() && music_state != MusicActions::PLAY_NEWS)
     {
-        doAction(RadioAction::PLAY_NEWS);
+        music(MusicActions::PLAY_NEWS);
+        show(ScreenActions::SHOW_NEWS);
     }
     switch (volumeKnob.rotary_encoder_update())
     {
     case RotaryEncoder::TURN_DOWN:
-        doAction(RadioAction::DEC_VOLUME);
+        music(MusicActions::DEC_VOLUME);
+        show(ScreenActions::SHOW_VOLUME);
         break;
     case RotaryEncoder::TURN_UP:
-        doAction(RadioAction::INC_VOLUME);
+        music(MusicActions::INC_VOLUME);
+        show(ScreenActions::SHOW_VOLUME);
         break;
     case RotaryEncoder::BUTTON_FELL:
-        doAction(RadioAction::OFF);
+        show(ScreenActions::SLEEP);
+        musicPlayer.stopStream();
+        musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
+        if (!streamDB.save(STREAMS_FILE))
+        {
+            ESP_LOGE(TAG, "Failed to save stream database");
+        }
+        while (musicPlayer.isPlaying())
+        {
+            musicPlayer.update();
+        }
+        ESP_LOGI(TAG, "Going to sleep");
+        delay(1000);
+        esp_deep_sleep_start();
         break;
     default:
         break;
@@ -302,7 +268,7 @@ void loop()
     {
         ESP_LOGI(TAG, "News finished");
         streamDB.restoreLastStream();
-        doAction(RadioAction::SELECT_CHANNEL);
+        music(MusicActions::PLAY_CHANNEL);
     }
 
     if (screenTimeout.isExpired())
@@ -333,7 +299,7 @@ static void onChannelSelected(const String &name)
     streamDB.setCurrentStream(name);
     last_artist = "";
     last_song_title = "";
-    doAction(RadioAction::SELECT_CHANNEL);
+    music(MusicActions::PLAY_CHANNEL);
 }
 
 void showstreamtitle(const String &artist, const String &song_title)
