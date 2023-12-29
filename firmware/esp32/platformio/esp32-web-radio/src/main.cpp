@@ -66,7 +66,8 @@ void setup()
     for (int i = 0; i < streamDB.size(); i++)
     {
         String name;
-        if (streamDB.getName(i, name))
+        if (streamDB.getName(i, name) && name.compareTo("VRT NWS") != 0)
+        //Don't add VRT NWS to the menu, it's a news channel, which only lasts for a few minutes
         {
             channelMenu.addMenuItem(name.c_str());
         }
