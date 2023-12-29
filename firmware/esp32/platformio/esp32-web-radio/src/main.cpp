@@ -223,17 +223,19 @@ void loop()
 {
 
     musicPlayer.update(); // play audio
-    newsButton.update();
     if (channelMenu.loop())
     {
+        // refresh timeout as long as the user is selecting a channel
         show(ScreenActions::SHOW_CHANNEL);
     }
 
+    newsButton.update();
     if (newsButton.fell() && music_state != MusicActions::PLAY_NEWS)
     {
         music(MusicActions::PLAY_NEWS);
         show(ScreenActions::SHOW_NEWS);
     }
+    
     switch (volumeKnob.rotary_encoder_update())
     {
     case RotaryEncoder::TURN_DOWN:
@@ -280,8 +282,6 @@ void loop()
         case ScreenActions::SLEEP:
             break;
         case ScreenActions::SHOW_VOLUME:
-            show(ScreenActions::SHOW_SONG);
-            break;
         case ScreenActions::SHOW_CHANNEL:
             show(ScreenActions::SHOW_SONG);
             break;
@@ -293,6 +293,11 @@ void loop()
     }
 }
 
+/**
+ * @brief Callback function for channel selection (push rotary encoder of the channel knob)
+ * 
+ * @param name 
+ */
 static void onChannelSelected(const String &name)
 {
     ESP_LOGI(TAG, "Setting channel: %s", name.c_str());
@@ -302,6 +307,12 @@ static void onChannelSelected(const String &name)
     music(MusicActions::PLAY_CHANNEL);
 }
 
+/**
+ * @brief Callback function for showing the song title and artist
+ * 
+ * @param artist 
+ * @param song_title 
+ */
 void showstreamtitle(const String &artist, const String &song_title)
 {
     last_artist = artist;
