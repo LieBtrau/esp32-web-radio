@@ -235,7 +235,7 @@ void loop()
         music(MusicActions::PLAY_NEWS);
         show(ScreenActions::SHOW_NEWS);
     }
-    
+
     switch (volumeKnob.rotary_encoder_update())
     {
     case RotaryEncoder::TURN_DOWN:
@@ -250,9 +250,13 @@ void loop()
         show(ScreenActions::SLEEP);
         musicPlayer.stopStream();
         musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
-        if (!streamDB.save(STREAMS_FILE))
+        for (int i = 0; i < 10; i++)
         {
-            ESP_LOGE(TAG, "Failed to save stream database");
+            if ((streamDB.save(STREAMS_FILE)))
+            {
+                ESP_LOGI(TAG, "Stream database saved");
+                break;
+            }
         }
         while (musicPlayer.isPlaying())
         {
@@ -295,8 +299,8 @@ void loop()
 
 /**
  * @brief Callback function for channel selection (push rotary encoder of the channel knob)
- * 
- * @param name 
+ *
+ * @param name
  */
 static void onChannelSelected(const String &name)
 {
@@ -309,9 +313,9 @@ static void onChannelSelected(const String &name)
 
 /**
  * @brief Callback function for showing the song title and artist
- * 
- * @param artist 
- * @param song_title 
+ *
+ * @param artist
+ * @param song_title
  */
 void showstreamtitle(const String &artist, const String &song_title)
 {
