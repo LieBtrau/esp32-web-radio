@@ -66,10 +66,7 @@ bool StreamDB::save(const char *dbFile)
     }
     db.close();
 
-    if(open(dbFile))
-    {
-        return true;
-    }
+    return open(dbFile);
 }
 
 bool StreamDB::getName(int index, String &name) const

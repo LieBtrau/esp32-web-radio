@@ -235,6 +235,15 @@ void loop()
         music(MusicActions::PLAY_NEWS);
         show(ScreenActions::SHOW_NEWS);
     }
+    if (music_state == MusicActions::PLAY_NEWS && !musicPlayer.isPlaying())
+    {
+        ESP_LOGI(TAG, "News finished");
+        streamDB.restoreLastStream();
+        last_artist = "";
+        last_song_title = "";
+        music(MusicActions::PLAY_CHANNEL);
+        show(ScreenActions::SHOW_SONG);
+    }
 
     switch (volumeKnob.rotary_encoder_update())
     {
@@ -268,13 +277,6 @@ void loop()
         break;
     default:
         break;
-    }
-
-    if (music_state == MusicActions::PLAY_NEWS && !musicPlayer.isPlaying())
-    {
-        ESP_LOGI(TAG, "News finished");
-        streamDB.restoreLastStream();
-        music(MusicActions::PLAY_CHANNEL);
     }
 
     if (screenTimeout.isExpired())
