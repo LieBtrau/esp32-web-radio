@@ -12,7 +12,7 @@ SeparateFolders=0
 TemplateLocationPath=
 PinSwapBy_Netlabel=1
 PinSwapBy_Pin=1
-AllowPortNetNames=0
+AllowPortNetNames=1
 AllowSheetEntryNetNames=1
 AppendSheetNumberToLocalNets=0
 NetlistSinglePinNets=0
@@ -44,7 +44,7 @@ CrossRefPorts=3
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=0
-CurrentVariant=I2C
+CurrentVariant=SPI
 
 [Preferences]
 PrefsVaultGUID=
@@ -101,14 +101,121 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
+[Document4]
+DocumentPath=Power.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=QVVUOKNQ
+
+[Document5]
+DocumentPath=Output.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=2
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=RBTZBCXQ
+
+[Document6]
+DocumentPath=Output.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document7]
+DocumentPath=Input.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=3
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=DSJHZFJU
+
+[Document8]
+DocumentPath=Input.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document9]
+DocumentPath=Main.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=4
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=BMXHEHGD
+
 [ProjectVariant1]
 UniqueID=0AE53688-3974-4336-9AF5-76AE5CDE23FC
 Description=I2C
 AllowFabrication=0
 ParameterCount=0
-VariationCount=2
+VariationCount=7
 Variation1=Designator=R22|UniqueId=\KZDBWSEY|Kind=1|AlternatePart= 
 Variation2=Designator=U3|UniqueId=\EMAHLMNC|Kind=1|AlternatePart= 
+Variation3=Designator=R?|UniqueId=\BNOQASIP|Kind=1|AlternatePart= 
+Variation4=Designator=R?|UniqueId=\UYCCUWOG|Kind=1|AlternatePart= 
+Variation5=Designator=R22|UniqueId=\HRXFQOWG\ZHPHNZJY|Kind=0|AlternatePart= 
+Variation6=Designator=U3|UniqueId=\SFHUJMLZ\SJRJMKYF|Kind=0|AlternatePart= 
+Variation7=Designator=R25|UniqueId=\QUPSEEFT\BSAABFAF|Kind=0|AlternatePart= 
 ParamVariationCount=0
 
 [ProjectVariant2]
@@ -116,7 +223,7 @@ UniqueID=8B6A4234-35A2-4939-A7D0-096B05AB4854
 Description=SPI
 AllowFabrication=0
 ParameterCount=0
-VariationCount=7
+VariationCount=16
 Variation1=Designator=R25|UniqueId=\BSAABFAF|Kind=1|AlternatePart= 
 Variation2=Designator=R26|UniqueId=\JAUFTVWP|Kind=1|AlternatePart= 
 Variation3=Designator=R?|UniqueId=\RVZGNPTI|Kind=1|AlternatePart= 
@@ -124,6 +231,15 @@ Variation4=Designator=R8|UniqueId=\FELSADUK|Kind=1|AlternatePart=
 Variation5=Designator=R?|UniqueId=\YHEVSZNE|Kind=1|AlternatePart= 
 Variation6=Designator=R?|UniqueId=\KNJKVFJE|Kind=1|AlternatePart= 
 Variation7=Designator=U3|UniqueId=\EMAHLMNC|Kind=1|AlternatePart= 
+Variation8=Designator=R?|UniqueId=\YPDQCSLQ|Kind=1|AlternatePart= 
+Variation9=Designator=R?|UniqueId=\XPKOHIIV|Kind=1|AlternatePart= 
+Variation10=Designator=R?|UniqueId=\FEUWLPSI|Kind=1|AlternatePart= 
+Variation11=Designator=R?|UniqueId=\DJXCKRWZ|Kind=1|AlternatePart= 
+Variation12=Designator=R22|UniqueId=\HRXFQOWG\ZHPHNZJY|Kind=0|AlternatePart= 
+Variation13=Designator=U3|UniqueId=\SFHUJMLZ\SJRJMKYF|Kind=0|AlternatePart= 
+Variation14=Designator=R8|UniqueId=\LLVQEZVM\TPMHVEAN|Kind=0|AlternatePart= 
+Variation15=Designator=R26|UniqueId=\QUPSEEFT\JAUFTVWP|Kind=0|AlternatePart= 
+Variation16=Designator=R25|UniqueId=\QUPSEEFT\BSAABFAF|Kind=0|AlternatePart= 
 ParamVariationCount=0
 
 [Parameter1]
@@ -968,7 +1084,7 @@ Type10=0
 Type11=2
 Type12=2
 Type13=2
-Type14=1
+Type14=0
 Type15=1
 Type16=1
 Type17=1
@@ -1109,14 +1225,14 @@ Type151=2
 
 [ERC Connection Matrix]
 L1=NNNNNNNNNNNWNNNWW
-L2=NNNNNNNWWNNNNWNWN
+L2=NNNNNNNWNNNNNWNWN
 L3=NNEENEEEENENNEEWN
 L4=NNENNNWEENNWNENWN
 L5=NNNNNNNNNNNNNNNNN
 L6=NNENNNNEENNWNENWN
 L7=NNEWNNWEENNWNENWN
 L8=NWEENEENEEENNEENN
-L9=NWEENEEEENEWNEEWW
+L9=NNEENEEEENEWNEEWW
 L10=NNNNNNNENNEWNNEWN
 L11=NNENNNNEEENWNENWN
 L12=WNNWNWWNWWWNWWWNN
@@ -1770,6 +1886,192 @@ SelectedOnly=0
 UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
+ComponentLibIdentifierKind0=Library Name Only
+ComponentLibraryIdentifier0=7c7 Engineering
+ComponentDesignItemID0=CMP-001-00089-15
+ComponentSymbolReference0=CAP-NP-2
+ComponentUpdate0=1
+ComponentIsDeviceSheet0=0
+ComponentLibIdentifierKind1=Library Name Only
+ComponentLibraryIdentifier1=7c7 Engineering
+ComponentDesignItemID1=CMP-001-0045-3
+ComponentSymbolReference1=BS412-Symbol-1
+ComponentUpdate1=1
+ComponentIsDeviceSheet1=0
+ComponentLibIdentifierKind2=Library Name Only
+ComponentLibraryIdentifier2=7c7 Engineering
+ComponentDesignItemID2=CMP-002-000028-9
+ComponentSymbolReference2=490107670612
+ComponentUpdate2=1
+ComponentIsDeviceSheet2=0
+ComponentLibIdentifierKind3=Library Name Only
+ComponentLibraryIdentifier3=7c7 Engineering
+ComponentDesignItemID3=CMP-002-000146-2
+ComponentSymbolReference3=SW_MOM
+ComponentUpdate3=1
+ComponentIsDeviceSheet3=0
+ComponentLibIdentifierKind4=Library Name Only
+ComponentLibraryIdentifier4=7c7 Engineering
+ComponentDesignItemID4=CMP-002-001064-7
+ComponentSymbolReference4=482024764004
+ComponentUpdate4=1
+ComponentIsDeviceSheet4=0
+ComponentLibIdentifierKind5=Library Name Only
+ComponentLibraryIdentifier5=7c7 Engineering
+ComponentDesignItemID5=CMP-002-001259-2
+ComponentSymbolReference5=IND-CORE-2
+ComponentUpdate5=1
+ComponentIsDeviceSheet5=0
+ComponentLibIdentifierKind6=Library Name Only
+ComponentLibraryIdentifier6=7c7 Engineering
+ComponentDesignItemID6=CMP-002-001561-2
+ComponentSymbolReference6=IND
+ComponentUpdate6=1
+ComponentIsDeviceSheet6=0
+ComponentLibIdentifierKind7=Library Name Only
+ComponentLibraryIdentifier7=7c7 Engineering
+ComponentDesignItemID7=CMP-002-001562-1
+ComponentSymbolReference7=AP3031KTR-G1-Symbol-1
+ComponentUpdate7=1
+ComponentIsDeviceSheet7=0
+ComponentLibIdentifierKind8=Library Name Only
+ComponentLibraryIdentifier8=7c7 Engineering
+ComponentDesignItemID8=CMP-004-00050-4
+ComponentSymbolReference8=DIODE-SKY-2
+ComponentUpdate8=1
+ComponentIsDeviceSheet8=0
+ComponentLibIdentifierKind9=Library Name Only
+ComponentLibraryIdentifier9=7c7 Engineering
+ComponentDesignItemID9=CMP-004-00053-3
+ComponentSymbolReference9=DIODE-SKY-2
+ComponentUpdate9=1
+ComponentIsDeviceSheet9=0
+ComponentLibIdentifierKind10=Library Name Only
+ComponentLibraryIdentifier10=7c7 Engineering
+ComponentDesignItemID10=CMP-009-00006-22
+ComponentSymbolReference10=RES
+ComponentUpdate10=1
+ComponentIsDeviceSheet10=0
+ComponentLibIdentifierKind11=Library Name Only
+ComponentLibraryIdentifier11=7c7 Engineering
+ComponentDesignItemID11=CMP-009-00014-24
+ComponentSymbolReference11=RES
+ComponentUpdate11=1
+ComponentIsDeviceSheet11=0
+ComponentLibIdentifierKind12=Library Name Only
+ComponentLibraryIdentifier12=7c7 Engineering
+ComponentDesignItemID12=CMP-009-00017-23
+ComponentSymbolReference12=RES
+ComponentUpdate12=1
+ComponentIsDeviceSheet12=0
+ComponentLibIdentifierKind13=Library Name Only
+ComponentLibraryIdentifier13=7c7 Engineering
+ComponentDesignItemID13=CMP-009-00023-24
+ComponentSymbolReference13=RES
+ComponentUpdate13=1
+ComponentIsDeviceSheet13=0
+ComponentLibIdentifierKind14=Library Name Only
+ComponentLibraryIdentifier14=7c7 Engineering
+ComponentDesignItemID14=CMP-009-00234-14
+ComponentSymbolReference14=RES
+ComponentUpdate14=1
+ComponentIsDeviceSheet14=0
+ComponentLibIdentifierKind15=Library Name Only
+ComponentLibraryIdentifier15=7c7 Engineering
+ComponentDesignItemID15=CMP-009-00243-14
+ComponentSymbolReference15=RES
+ComponentUpdate15=1
+ComponentIsDeviceSheet15=0
+ComponentLibIdentifierKind16=Library Name Only
+ComponentLibraryIdentifier16=7c7 Engineering
+ComponentDesignItemID16=CMP-009-00290-7
+ComponentSymbolReference16=RES
+ComponentUpdate16=1
+ComponentIsDeviceSheet16=0
+ComponentLibIdentifierKind17=Library Name Only
+ComponentLibraryIdentifier17=7c7 Engineering
+ComponentDesignItemID17=CMP-009-00346-2
+ComponentSymbolReference17=RES
+ComponentUpdate17=1
+ComponentIsDeviceSheet17=0
+ComponentLibIdentifierKind18=Library Name Only
+ComponentLibraryIdentifier18=7c7 Engineering
+ComponentDesignItemID18=CMP-013-00048-13
+ComponentSymbolReference18=BJT-NPN-BEC
+ComponentUpdate18=1
+ComponentIsDeviceSheet18=0
+ComponentLibIdentifierKind19=Library Name Only
+ComponentLibraryIdentifier19=7c7 Engineering
+ComponentDesignItemID19=CMP-013-00056-8
+ComponentSymbolReference19=PEMOS-GSD-3
+ComponentUpdate19=1
+ComponentIsDeviceSheet19=0
+ComponentLibIdentifierKind20=Library Name Only
+ComponentLibraryIdentifier20=7c7 Engineering
+ComponentDesignItemID20=CMP-014-00012-1
+ComponentSymbolReference20=MAX98357A
+ComponentUpdate20=1
+ComponentIsDeviceSheet20=0
+ComponentLibIdentifierKind21=Library Name Only
+ComponentLibraryIdentifier21=7c7 Engineering
+ComponentDesignItemID21=CMP-019-000003-20
+ComponentSymbolReference21=ESP32_WROVER
+ComponentUpdate21=1
+ComponentIsDeviceSheet21=0
+ComponentLibIdentifierKind22=Library Name Only
+ComponentLibraryIdentifier22=7c7 Engineering
+ComponentDesignItemID22=CMP-019-00081-9
+ComponentSymbolReference22=LDO-with-enable
+ComponentUpdate22=1
+ComponentIsDeviceSheet22=0
+ComponentLibIdentifierKind23=Library Name Only
+ComponentLibraryIdentifier23=7c7 Engineering
+ComponentDesignItemID23=CMP-043-000244-1
+ComponentSymbolReference23=Symbol
+ComponentUpdate23=1
+ComponentIsDeviceSheet23=0
+ComponentLibIdentifierKind24=Library Name Only
+ComponentLibraryIdentifier24=7c7 Engineering
+ComponentDesignItemID24=CMP-047-000040-10
+ComponentSymbolReference24=HDR_2P_2MP
+ComponentUpdate24=1
+ComponentIsDeviceSheet24=0
+ComponentLibIdentifierKind25=Library Name Only
+ComponentLibraryIdentifier25=7c7 Engineering
+ComponentDesignItemID25=CMP-072-000577-12
+ComponentSymbolReference25=CAP-NP-2
+ComponentUpdate25=1
+ComponentIsDeviceSheet25=0
+ComponentLibIdentifierKind26=Library Name Only
+ComponentLibraryIdentifier26=7c7 Engineering
+ComponentDesignItemID26=CMP-072-000619-12
+ComponentSymbolReference26=CAP-NP-2
+ComponentUpdate26=1
+ComponentIsDeviceSheet26=0
+ComponentLibIdentifierKind27=Library Name Only
+ComponentLibraryIdentifier27=7c7 Engineering
+ComponentDesignItemID27=CMP-072-000659-13
+ComponentSymbolReference27=CAP-NP-2
+ComponentUpdate27=1
+ComponentIsDeviceSheet27=0
+ComponentLibIdentifierKind28=Library Name Only
+ComponentLibraryIdentifier28=7c7 Engineering
+ComponentDesignItemID28=CMP-072-000777-12
+ComponentSymbolReference28=CAP-NP-2
+ComponentUpdate28=1
+ComponentIsDeviceSheet28=0
+ComponentLibIdentifierKind29=Library Name Only
+ComponentLibraryIdentifier29=7c7 Engineering
+ComponentDesignItemID29=CMP-072-000922-13
+ComponentSymbolReference29=CAP-NP-2
+ComponentUpdate29=1
+ComponentIsDeviceSheet29=0
+ComponentLibIdentifierKind30=Library Name Only
+ComponentLibraryIdentifier30=7c7 Engineering
+ComponentDesignItemID30=CMP-112-000042-3
+ComponentSymbolReference30=865081763011
+ComponentUpdate30=1
+ComponentIsDeviceSheet30=0
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
