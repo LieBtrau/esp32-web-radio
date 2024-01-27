@@ -10,20 +10,20 @@ typedef enum pin_def_t
     PIN_SDA = 13,
     
     // I2S
-    I2S_DOUT = 23,
-    I2S_LRC = 22,
-    I2S_BCLK = 21,
+    I2S_DOUT = 5,
+    I2S_LRC = 2,
+    I2S_BCLK = 4,
 
     // Encoder 1
-    PIN_ENC1_S1 = 33,
+    PIN_ENC1_S1 = 39,
     PIN_ENC1_S2 = 34,
-    PIN_ENC1_KEY = 32,
+    PIN_ENC1_KEY = 36,
 
     // Encoder 2
-    PIN_ENC2_S1 = 36,
-    PIN_ENC2_S2 = 39,
-    PIN_ENC2_KEY = 35,
+    PIN_ENC2_S1 = 19,
+    PIN_ENC2_S2 = 21,
+    PIN_ENC2_KEY = 18,
 
     // News button
-    PIN_NEWS_BTN = 18
+    PIN_NEWS_BTN = 35
 } pin_def_t;
