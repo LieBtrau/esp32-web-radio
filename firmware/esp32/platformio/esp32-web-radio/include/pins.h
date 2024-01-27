@@ -25,5 +25,5 @@ typedef enum pin_def_t
     PIN_ENC2_KEY = 18,
 
     // News button
-    PIN_NEWS_BTN = 35
+    PIN_NEWS_BTN = 33
 } pin_def_t;
