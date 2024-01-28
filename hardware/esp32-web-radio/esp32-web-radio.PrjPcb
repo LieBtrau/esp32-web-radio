@@ -268,12 +268,12 @@ Name=board_name
 Value=WEBRAD
 
 [Parameter2]
-Name=project_revision
-Value=1.0
-
-[Parameter3]
 Name=Project_link
 Value=https://github.com/LieBtrau/esp32-web-radio
+
+[Parameter3]
+Name=project_revision
+Value=1.0
 
 [Configuration1]
 Name=Sources
