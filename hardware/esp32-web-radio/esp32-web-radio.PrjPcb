@@ -220,6 +220,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=NNMGWEIF
 
+[Document11]
+DocumentPath=MCU.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [ProjectVariant1]
 UniqueID=0AE53688-3974-4336-9AF5-76AE5CDE23FC
 Description=I2C
