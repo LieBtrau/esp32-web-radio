@@ -44,7 +44,7 @@ CrossRefPorts=3
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=0
-CurrentVariant=SPI
+CurrentVariant=I2C
 
 [Preferences]
 PrefsVaultGUID=
@@ -242,7 +242,7 @@ UniqueID=0AE53688-3974-4336-9AF5-76AE5CDE23FC
 Description=I2C
 AllowFabrication=0
 ParameterCount=0
-VariationCount=7
+VariationCount=8
 Variation1=Designator=R22|UniqueId=\KZDBWSEY|Kind=1|AlternatePart= 
 Variation2=Designator=U3|UniqueId=\EMAHLMNC|Kind=1|AlternatePart= 
 Variation3=Designator=R?|UniqueId=\BNOQASIP|Kind=1|AlternatePart= 
@@ -250,6 +250,7 @@ Variation4=Designator=R?|UniqueId=\UYCCUWOG|Kind=1|AlternatePart=
 Variation5=Designator=R22|UniqueId=\HRXFQOWG\ZHPHNZJY|Kind=0|AlternatePart= 
 Variation6=Designator=U3|UniqueId=\SFHUJMLZ\SJRJMKYF|Kind=0|AlternatePart= 
 Variation7=Designator=R25|UniqueId=\QUPSEEFT\BSAABFAF|Kind=0|AlternatePart= 
+Variation8=Designator=R18|UniqueId=\SFHUJMLZ\UYCCUWOG|Kind=1|AlternatePart= 
 ParamVariationCount=0
 
 [ProjectVariant2]
@@ -257,7 +258,7 @@ UniqueID=8B6A4234-35A2-4939-A7D0-096B05AB4854
 Description=SPI
 AllowFabrication=0
 ParameterCount=0
-VariationCount=16
+VariationCount=20
 Variation1=Designator=R25|UniqueId=\BSAABFAF|Kind=1|AlternatePart= 
 Variation2=Designator=R26|UniqueId=\JAUFTVWP|Kind=1|AlternatePart= 
 Variation3=Designator=R?|UniqueId=\RVZGNPTI|Kind=1|AlternatePart= 
@@ -274,6 +275,10 @@ Variation13=Designator=U3|UniqueId=\SFHUJMLZ\SJRJMKYF|Kind=0|AlternatePart=
 Variation14=Designator=R8|UniqueId=\LLVQEZVM\TPMHVEAN|Kind=0|AlternatePart= 
 Variation15=Designator=R26|UniqueId=\QUPSEEFT\JAUFTVWP|Kind=0|AlternatePart= 
 Variation16=Designator=R25|UniqueId=\QUPSEEFT\BSAABFAF|Kind=0|AlternatePart= 
+Variation17=Designator=R13|UniqueId=\SFHUJMLZ\XPKOHIIV|Kind=1|AlternatePart= 
+Variation18=Designator=R11|UniqueId=\SFHUJMLZ\YPDQCSLQ|Kind=1|AlternatePart= 
+Variation19=Designator=R19|UniqueId=\SFHUJMLZ\DJXCKRWZ|Kind=1|AlternatePart= 
+Variation20=Designator=R17|UniqueId=\SFHUJMLZ\FEUWLPSI|Kind=1|AlternatePart= 
 ParamVariationCount=0
 
 [GeneratedDocument1]
