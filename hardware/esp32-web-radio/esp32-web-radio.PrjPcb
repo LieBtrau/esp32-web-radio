@@ -221,7 +221,7 @@ GenerateClassCluster=0
 DocumentUniqueId=NNMGWEIF
 
 [Document11]
-DocumentPath=MCU.Harness
+DocumentPath=Fabrication_GBR.OutJob
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
