@@ -90,19 +90,19 @@ Configuration4_Item2=Not IsNullOrEmpty([JLCPCB Part #])
 Configuration4_Name3=FilterString_Flat
 Configuration4_Item3=Not IsNullOrEmpty([JLCPCB Part #])
 Configuration4_Name4=General
-Configuration4_Item4=OpenExported=False|AddToProject=False|ReportBOMViolationsInMessages=False|ForceFit=False|NotFitted=False|Database=False|DatabasePriority=False|IncludePcbData=False|IncludeVaultData=False|IncludeCloudData=False|IncludeDocumentData=False|IncludeAlternatives=False|ShowExportOptions=True|TemplateFilename=|TemplateVaultGuid=|TemplateItemGuid=|TemplateRevisionGuid=|BatchMode=5|FormWidth=1707|FormHeight=1020|SupplierProdQty=3000|SupplierAutoQty=False|SupplierUseCachedPricing=False|SupplierCurrency=EUR|SolutionsPerItem=1|SuppliersPerSolution=1|ViewType=1|UseDirectApi=True|BomSetName=
+Configuration4_Item4=OpenExported=False|AddToProject=False|ReportBOMViolationsInMessages=False|ForceFit=False|NotFitted=False|Database=False|DatabasePriority=False|IncludePcbData=False|IncludeVaultData=True|IncludeCloudData=False|IncludeDocumentData=False|IncludeAlternatives=False|ShowExportOptions=True|TemplateFilename=|TemplateVaultGuid=|TemplateItemGuid=|TemplateRevisionGuid=|BatchMode=5|FormWidth=1707|FormHeight=1020|SupplierProdQty=3000|SupplierAutoQty=False|SupplierUseCachedPricing=False|SupplierCurrency=EUR|SolutionsPerItem=1|SuppliersPerSolution=1|ViewType=1|UseDirectApi=True|BomSetName=
 Configuration4_Name5=GroupOrder
-Configuration4_Item5=Item ID=True
+Configuration4_Item5=ItemGUID=True
 Configuration4_Name6=SortOrder
-Configuration4_Item6=JLCPCB Part #=Up
+Configuration4_Item6=Item ID=Up
 Configuration4_Name7=VisibleOrder
-Configuration4_Item7=Item ID=122|Designator=166|ItemGUID=265|JLCPCB Part #=170
+Configuration4_Item7=Item ID=100|Designator=166|ItemGUID=100|JLCPCB Part #=170
 Configuration4_Name8=VisibleOrder_Base
 Configuration4_Item8=Line #=54|Comment=120|Description=120|Designator=120|Revision ID=79|Revision Status=99|Quantity=120|Manufacturer 1=101|Manufacturer Part Number 1=170|Manufacturer Lifecycle 1=147|Supplier 1=74|Supplier Part Number 1=143|Supplier Unit Price 1=127|Supplier Subtotal 1=120
 Configuration4_Name9=VisibleOrder_Consolidated
 Configuration4_Item9=Line #=100|Comment=100|Description=100|Designator=100|Revision ID=100|Revision Status=100|Quantity=100|Manufacturer 1=101|Manufacturer Part Number 1=170|Manufacturer Lifecycle 1=147|Supplier 1=74|Supplier Part Number 1=143|Supplier Unit Price 1=127|Supplier Subtotal 1=120|Quantity@A=100|Price@A=100
 Configuration4_Name10=VisibleOrder_Flat
-Configuration4_Item10=Item ID=122|Designator=166|ItemGUID=265|JLCPCB Part #=170
+Configuration4_Item10=Item ID=100|Designator=166|ItemGUID=100|JLCPCB Part #=170
 
 [PublishSettings]
 OutputFilePath2=C:\Users\32470\OneDrive - 7c7engineering.com\Documents\Altium\EVC220108\Project Outputs for EVC220108\Board assembly output\
