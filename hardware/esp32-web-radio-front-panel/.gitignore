@@ -1,0 +1,9 @@
+History
+*.LOG
+*.SchDocPreview
+*.Harness
+*.PrjPcbStructure
+
+Project Outputs*/*
+Project Logs */*
+Models
