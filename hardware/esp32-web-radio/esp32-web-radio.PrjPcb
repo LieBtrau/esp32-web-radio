@@ -303,16 +303,20 @@ DocumentPath=Project Outputs for esp32-web-radio\Design Rule Check - esp32-web-r
 DItemRevisionGUID=
 
 [Parameter1]
-Name=board_name
-Value=WEBRAD
-
-[Parameter2]
 Name=Project_link
 Value=https://github.com/LieBtrau/esp32-web-radio
 
-[Parameter3]
-Name=project_revision
+[Parameter2]
+Name=board_revision
 Value=1.0
+
+[Parameter3]
+Name=board_name
+Value=WEBRAD
+
+[Parameter4]
+Name=assembly_revision
+Value=0
 
 [Configuration1]
 Name=Sources

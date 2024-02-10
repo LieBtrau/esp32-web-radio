@@ -15,7 +15,7 @@ LifeCycleDefinitionGUID=
 RevisionNamingSchemeGUID=
 
 [OutputGroup1]
-Name=Assembly.OutJob
+Name=
 Description=
 TargetOutputMedium=Manufacturing output (BOM and PnP)
 VariantName=I2C
@@ -105,22 +105,22 @@ Configuration4_Name10=VisibleOrder_Flat
 Configuration4_Item10=Item ID=100|Designator=166|ItemGUID=100|JLCPCB Part #=170
 
 [PublishSettings]
-OutputFilePath2=C:\Users\32470\OneDrive - 7c7engineering.com\Documents\Altium\EVC220108\Project Outputs for EVC220108\Board assembly output\
+OutputFilePath2=C:\github\esp32-web-radio\hardware\esp32-web-radio\Project Outputs for esp32-web-radio\Board assembly output\
 ReleaseManaged2=1
 OutputBasePath2=Project Outputs for esp32-web-radio
 OutputPathMedia2=Board assembly output
 OutputPathMediaValue2=Board assembly output
 OutputPathOutputer2=[Output Custom]
 OutputPathOutputerPrefix2=
-OutputPathOutputerValue2==board_name+_+project_revision+VariantName+_PBA
+OutputPathOutputerValue2==board_name+_+board_revision+'.'+assembly_revision+'-'+VariantName+_PBA
 OutputFileName2=
-OutputFileNameMulti2==board_name+_+project_revision+VariantName+_+OutputName
+OutputFileNameMulti2==board_name+_+board_revision+'.'+assembly_revision+'-'+VariantName+'_'+OutputName
 UseOutputNameForMulti2=0
 OutputFileNameSpecial2=
 OpenOutput2=0
 
 [GeneratedFilesSettings]
-RelativeOutputPath2=C:\Users\32470\OneDrive - 7c7engineering.com\Documents\Altium\EVC220108\Project Outputs for EVC220108\Board assembly output\
+RelativeOutputPath2=C:\github\esp32-web-radio\hardware\esp32-web-radio\Project Outputs for esp32-web-radio\Board assembly output\
 OpenOutputs2=0
 AddToProject2=0
 TimestampFolder2=0
