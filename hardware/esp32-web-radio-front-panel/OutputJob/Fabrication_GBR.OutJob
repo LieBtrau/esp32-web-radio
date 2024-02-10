@@ -15,7 +15,7 @@ LifeCycleDefinitionGUID=
 RevisionNamingSchemeGUID=
 
 [OutputGroup1]
-Name=Fabrication_GBR.OutJob
+Name=
 Description=
 TargetOutputMedium=Manufacturing output (PCB only)
 VariantName=[No Variations]
@@ -60,9 +60,9 @@ OutputPathMedia2=Board manufacturing output (GBR)
 OutputPathMediaValue2=Board manufacturing output (GBR)
 OutputPathOutputer2=[Output Custom]
 OutputPathOutputerPrefix2=
-OutputPathOutputerValue2==board_name+_+project_revision+_GBR
+OutputPathOutputerValue2==board_name+_+board_revision+_GBR
 OutputFileName2=
-OutputFileNameMulti2==board_name+_+project_revision
+OutputFileNameMulti2==board_name+_+board_revision
 UseOutputNameForMulti2=0
 OutputFileNameSpecial2=
 OpenOutput2=0
