@@ -100,6 +100,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=KPOATIKQ
 
+[Document4]
+DocumentPath=Fabrication_GBR.OutJob
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [GeneratedDocument1]
 DocumentPath=Project Outputs for WEB_RAD_PWR\Design Rule Check - WEB_RAD_PWR.html
 DItemRevisionGUID=
@@ -109,7 +126,7 @@ DocumentPath=Project Outputs for WEB_RAD_PWR\Net Status - WEB_RAD_PWR.html
 DItemRevisionGUID=
 
 [Parameter1]
-Name=assembly_version
+Name=assembly_revision
 Value=0
 
 [Parameter2]
