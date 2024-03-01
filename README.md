@@ -1,6 +1,6 @@
-# What is this?
+# Description
 
-Here you'll find the electronics design and firmware of a web radio based on the ESP32 microcontroller.
+Electronics design and firmware of for the conversion of an FM-radio to a web radio based on the ESP32 microcontroller.
 
 ## Design goals
 * Allow the user to listen to web radio stations.
@@ -9,12 +9,19 @@ Here you'll find the electronics design and firmware of a web radio based on the
 * USB powered
 * Easy to use : two knobs and a button
   * One knob to change the volume and to switch the radio on/off
-  * One knob to change the radio station
-  * One button to listen to the last news broadcast
+  * One knob to change the radio station/channel
+  * One button to listen to the latest news broadcast
 * Cheap
-  * OLED display instead of LCD display because of the better contrast.  I want the black pixels to be black.
+  * OLED display instead of LCD display because of the better contrast.  Black pixels are really black.
 
-## Why web radio instead of DAB+?
+# Hardware version 1.0
+* [Release binaries](https://github.com/LieBtrau/esp32-web-radio/releases/tag/hw_1.0.0) (gerber data, BoM, PDF schematics, PDF PCB assembly drawing)
+* Online Altium viewer (schematic, PCB, 3D view, Draftsman drawing, BoM):
+  * [Logic board](https://365.altium.com/files/4109E801-90D9-4754-8810-C3B9F4649D15)
+  * [Front panel](https://365.altium.com/files/9F6788B9-9D0B-400C-A80F-A1CFE65F462F)
+  * [Power entry module](https://365.altium.com/files/06756B94-5B1C-4D01-91C6-53AC24E7E911)
+
+# Why web radio instead of DAB+?
 * DAB+ is limited to local radio stations.  Web radio gives access to radio stations from all over the world.
 * DAB+ reception quality is not great indoors.  The radio must be located near a window and the antenna must be fully extended.
 * Sound quality won't probably be worse than DAB+.  I'm using a cheap speaker anyway.
