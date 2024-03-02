@@ -2,6 +2,7 @@
 
 | Equipment | Description | Serial Number | Date of last calibration |
 |-----------|-------------|---------------|--------------------------|
+| Multimeter | Mastech M92 | 20011206033 | - |
 
 # Test Incident Reports
 
