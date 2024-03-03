@@ -9,7 +9,7 @@ class OLED_Renderer : public MenuComponentRenderer
 
 public:
     OLED_Renderer(Adafruit_SSD1305 &display) : display(display) {}
-    bool init();
+    bool init(bool displayInitialized);
     void clear() const;
     void render(Menu const &menu) const;
     void render_menu_item(MenuItem const &menu_item) const;
@@ -26,4 +26,5 @@ private:
     const int MENU_COLS = 21;
     void print(const char *str) const;
     Adafruit_SSD1305 &display;
+    bool _displayInitialized = false;
 };

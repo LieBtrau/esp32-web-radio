@@ -2,8 +2,13 @@
 
 static const char *TAG = "OLED_Renderer";
 
-bool OLED_Renderer::init()
+bool OLED_Renderer::init(bool displayInitialized)
 {
+    if(!displayInitialized)
+    {
+        return false;
+    }
+    _displayInitialized = true;
     display.display();
     delay(1000);
     display.clearDisplay(); // clears the screen and buffer
@@ -19,6 +24,10 @@ bool OLED_Renderer::init()
 
 void OLED_Renderer::clear() const
 {
+    if(!_displayInitialized)
+    {
+        return;
+    }
     display.clearDisplay();
     display.display();
     //display.sleep();
@@ -26,6 +35,10 @@ void OLED_Renderer::clear() const
 
 void OLED_Renderer::render(Menu const &menu) const
 {
+    if(!_displayInitialized)
+    {
+        return;
+    }
     int active_item = 0;
 
     display.clearDisplay();
@@ -81,6 +94,10 @@ void OLED_Renderer::render(Menu const &menu) const
 
 void OLED_Renderer::render_menu_item(MenuItem const &menu_item) const
 {
+    if(!_displayInitialized)
+    {
+        return;
+    }
     display.print(menu_item.get_name());
 
     // Padding for inverted text
@@ -110,6 +127,10 @@ void OLED_Renderer::render_menu(Menu const &menu) const
 
 void OLED_Renderer::screenSaver()
 {
+    if(!_displayInitialized)
+    {
+        return;
+    }
     display.clearDisplay();
     display.display();
 }
@@ -121,6 +142,10 @@ void OLED_Renderer::screenSaver()
  */
 void OLED_Renderer::render_channel(const String &channel)
 {
+    if(!_displayInitialized)
+    {
+        return;
+    }
     display.clearDisplay(); // clears the screen and buffer
     display.setCursor(0, 0);
     display.setTextSize(1);
@@ -132,6 +157,10 @@ void OLED_Renderer::render_channel(const String &channel)
 
 void OLED_Renderer::render_volume(uint8_t volume, uint8_t maxVolume, String &channelName)
 {
+    if(!_displayInitialized)
+    {
+        return;
+    }
     render_channel(channelName);
 
     display.println("Volume: ");

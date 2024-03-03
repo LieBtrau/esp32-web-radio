@@ -199,12 +199,10 @@ void setup()
     }
     // musicPlayer.playSpeech("Hallo Marison, leuk dat je weer naar me wil luisteren. Hihi", "nl"); // Google TTS
 
-    if (!display.begin(SSD1305_ADDR, false))
+    if (!renderer.init(display.begin(SSD1305_ADDR, false)))
     {
         ESP_LOGE(TAG, "Unable to initialize OLED");
-        return;
     }
-    renderer.init();
 
     String selectedChannel;
     if (streamDB.getCurrentStream(selectedChannel))
