@@ -154,7 +154,7 @@ void music(MusicActions action)
 
 void setup()
 {
-    ESP_LOGI(, "\r\nBuild %s, utc: %lu\r\n", COMMIT_HASH, CURRENT_TIME);
+    ESP_LOGI(, "\r\nBuild %s, %s %s\r\n", AUTO_VERSION, __DATE__, __TIME__);
     Wire.setPins(PIN_SDA, PIN_SCL);
 
     volumeKnob.init();
