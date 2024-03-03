@@ -3,6 +3,7 @@
 | Equipment | Description | Serial Number | Date of last calibration |
 |-----------|-------------|---------------|--------------------------|
 | Multimeter | Mastech M92 | 20011206033 | - |
+| Power Supply | Siglent SPD3303C | SPD3EEEC6R0513 | TBD |
 
 # Test Incident Reports
 
