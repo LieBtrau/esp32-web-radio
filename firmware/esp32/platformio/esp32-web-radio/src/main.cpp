@@ -23,7 +23,6 @@
 #include "ChannelMenu.h"
 #include "Bounce2.h"
 
-static const char *TAG = "main";
 static const uint8_t SSD1305_ADDR = 0x3C;
 static const char *STREAMS_FILE = "/streams.json";
 static const char *NEWS_STREAM = "VRT NWS";
@@ -86,7 +85,7 @@ void show(ScreenActions action)
         }
         else
         {
-            ESP_LOGE(TAG, "No current stream");
+            ESP_LOGE(, "No current stream");
             renderer.clear();
         }
         break;
@@ -102,7 +101,7 @@ void show(ScreenActions action)
         }
         else
         {
-            ESP_LOGE(TAG, "No current stream");
+            ESP_LOGE(, "No current stream");
             renderer.clear();
         }
         break;
@@ -133,7 +132,7 @@ void music(MusicActions action)
     case MusicActions::PLAY_CHANNEL:
         if (streamDB.getCurrentStream(selectedChannel))
         {
-            ESP_LOGI(TAG, "Selected channel: %s", selectedChannel.c_str());
+            ESP_LOGI(, "Selected channel: %s", selectedChannel.c_str());
             streamDB.getVolume(selectedChannel, volume);
             streamDB.getStream(selectedChannel, url);
         }
@@ -155,7 +154,7 @@ void music(MusicActions action)
 
 void setup()
 {
-    ESP_LOGI(TAG, "\r\nBuild %s, utc: %lu\r\n", COMMIT_HASH, CURRENT_TIME);
+    ESP_LOGI(, "\r\nBuild %s, utc: %lu\r\n", COMMIT_HASH, CURRENT_TIME);
     Wire.setPins(PIN_SDA, PIN_SCL);
 
     volumeKnob.init();
@@ -163,7 +162,7 @@ void setup()
 
     if (!SPIFFS.begin())
     {
-        ESP_LOGE(TAG, "Cannot mount SPIFFS volume...be sure to upload Filesystem Image before uploading the sketch");
+        ESP_LOGE(, "Cannot mount SPIFFS volume...be sure to upload Filesystem Image before uploading the sketch");
         while (1)
             ;
     }
@@ -189,25 +188,25 @@ void setup()
     while (stat != WL_CONNECTED)
     {
         stat = wifiMulti.run();
-        Serial.printf("WiFi status: %d\r\n", (int)stat);
+        ESP_LOGI(,"WiFi status: %d\r\n", (int)stat);
         delay(100);
     }
 
     if (!musicPlayer.init(I2S_BCLK, I2S_LRC, I2S_DOUT))
     {
-        ESP_LOGE(TAG, "Error initializing music player");
+        ESP_LOGE(, "Error initializing music player");
     }
     // musicPlayer.playSpeech("Hallo Marison, leuk dat je weer naar me wil luisteren. Hihi", "nl"); // Google TTS
 
     if (!renderer.init(display.begin(SSD1305_ADDR, false)))
     {
-        ESP_LOGE(TAG, "Unable to initialize OLED");
+        ESP_LOGE(, "Unable to initialize OLED");
     }
 
     String selectedChannel;
     if (streamDB.getCurrentStream(selectedChannel))
     {
-        ESP_LOGI(TAG, "Resuming stream: %s", selectedChannel);
+        ESP_LOGI(, "Resuming stream: %s", selectedChannel);
         onChannelSelected(selectedChannel.c_str());
     }
 
@@ -235,7 +234,7 @@ void loop()
     }
     if (music_state == MusicActions::PLAY_NEWS && !musicPlayer.isPlaying())
     {
-        ESP_LOGI(TAG, "News finished");
+        ESP_LOGI(, "News finished");
         streamDB.restoreLastStream();
         last_artist = "";
         last_song_title = "";
@@ -261,7 +260,7 @@ void loop()
         {
             if ((streamDB.save(STREAMS_FILE)))
             {
-                ESP_LOGI(TAG, "Stream database saved");
+                ESP_LOGI(, "Stream database saved");
                 break;
             }
         }
@@ -269,7 +268,7 @@ void loop()
         {
             musicPlayer.update();
         }
-        ESP_LOGI(TAG, "Going to sleep");
+        ESP_LOGI(, "Going to sleep");
         delay(1000);
         esp_deep_sleep_start();
         break;
@@ -279,7 +278,7 @@ void loop()
 
     if (screenTimeout.isExpired())
     {
-        ESP_LOGI(TAG, "Screen timeout");
+        ESP_LOGI(, "Screen timeout");
         screenTimeout.repeat();
         switch (screen_state)
         {
@@ -304,7 +303,7 @@ void loop()
  */
 static void onChannelSelected(const String &name)
 {
-    ESP_LOGI(TAG, "Setting channel: %s", name.c_str());
+    ESP_LOGI(, "Setting channel: %s", name.c_str());
     streamDB.setCurrentStream(name);
     last_artist = "";
     last_song_title = "";

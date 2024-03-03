@@ -1,7 +1,5 @@
 #include "OLED_Renderer.h"
 
-static const char *TAG = "OLED_Renderer";
-
 bool OLED_Renderer::init(bool displayInitialized)
 {
     if(!displayInitialized)

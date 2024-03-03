@@ -1,7 +1,5 @@
 #include "Music.h"
 
-static const char *TAG = "Music";
-
 extern void showstreamtitle(const String& artist, const String& song_title);
 
 Music::Music(const int i2c_sda, const int i2c_scl, const int pin_PA_enable)
@@ -20,13 +18,13 @@ bool Music::init(const uint8_t i2s_bck, const uint8_t i2s_ws, const uint8_t i2s_
 {
     if (!_audio.setPinout(i2s_bck, i2s_ws, i2s_data_out))
     {
-        ESP_LOGE(TAG, "Error setting pinout");
+        ESP_LOGE(,"Error setting pinout");
         return false;
     }
 #ifdef ESP32_AUDIO_KIT
     if (!dac.init())
     {
-        ESP_LOGE(TAG, "Error initializing ES8388 chip");
+        ESP_LOGE(,"Error initializing ES8388 chip");
         return false;
     }
     _dac.setOutputVolume(ES8388::OutSel::OUTALL, _volume);
@@ -74,7 +72,7 @@ bool Music::startStream(const char *url, const uint8_t volume,  bool stopCurrent
     }
     if(!setVolume(volume))
     {
-        ESP_LOGE(TAG, "Error setting volume");
+        ESP_LOGE(,"Error setting volume");
         return false;
     }
     return _audio.connecttohost(url);

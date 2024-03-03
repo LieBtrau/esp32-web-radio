@@ -15,16 +15,14 @@
 // File System
 #include "SPIFFS.h"
 
-static const char *TAG = "streams";
-
 bool StreamDB::open(const char *dbFile)
 {
-    ESP_LOGI(TAG, "[DB] open(%s)", dbFile);
+    ESP_LOGI(, "[DB] open(%s)", dbFile);
 
     File db = SPIFFS.open(dbFile, "r");
     if (!db)
     {
-        ESP_LOGE(TAG, "ERROR: file not found");
+        ESP_LOGE(,"ERROR: file not found");
         return false;
     }
 
@@ -32,7 +30,7 @@ bool StreamDB::open(const char *dbFile)
     DeserializationError err = deserializeJson(_doc, db);
     if (err)
     {
-        ESP_LOGE(TAG, "%s", err.c_str());
+        ESP_LOGE(,"%s", err.c_str());
         return false;
     }
     db.close();
@@ -54,14 +52,14 @@ bool StreamDB::save(const char *dbFile)
     File db = SPIFFS.open(dbFile, "w");
     if (!db)
     {
-        ESP_LOGE(TAG, "ERROR: file not found");
+        ESP_LOGE(,"ERROR: file not found");
         return false;
     }
 
     // Serialize JSON to file
     if (serializeJson(_doc, db) == 0)
     {
-        ESP_LOGE(TAG, "Failed to write to file");
+        ESP_LOGE(,"Failed to write to file");
         return false;
     }
     db.close();
