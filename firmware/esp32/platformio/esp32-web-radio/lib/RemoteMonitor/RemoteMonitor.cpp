@@ -2,7 +2,6 @@
 
 void taskInternetCLI(void *parameter);
 static RemoteMonitor *pRemoteMonitor = NULL;
-static const char *TAG = "RemoteMonitor";
 
 RemoteMonitor::RemoteMonitor(const char *hostName, const int cliPort) : _hostName(hostName), _server(cliPort)
 {

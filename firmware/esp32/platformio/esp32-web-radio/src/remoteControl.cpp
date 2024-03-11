@@ -3,7 +3,6 @@
 #include "RemoteMonitor.h"
 #include "husarnet_id.h"
 
-static const char *TAG = "remoteControl";
 static const char *hostName = "esp32-web-radio";
 static RemoteMonitor remoteMonitor(hostName);
 static Command set_led;
@@ -15,7 +14,7 @@ void set_led_callback(cmd *c)
     Command cmd(c);
 
     String state = cmd.getArg("state").getValue();
-    ESP_LOGI(TAG, "set_led_callback: %s", state.c_str());
+    ESP_LOGI(, "set_led_callback: %s", state.c_str());
 }
 
 void init_remoteControl()

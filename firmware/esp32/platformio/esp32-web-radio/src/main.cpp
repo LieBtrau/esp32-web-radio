@@ -36,8 +36,8 @@ static void onChannelSelected(const String &name);
 static Music musicPlayer;
 static WiFiMulti wifiMulti;
 static StreamDB streamDB;
-static RotaryEncoder volumeKnob(new Encoder(PIN_ENC1_S1, PIN_ENC1_S2), PIN_ENC1_KEY);
-static RotaryEncoder channelKnob(new Encoder(PIN_ENC2_S1, PIN_ENC2_S2), PIN_ENC2_KEY);
+static RotaryEncoder volumeKnob(new Encoder(PIN_ENCVOL_S1, PIN_ENCVOL_S2), PIN_ENCVOL_KEY);
+static RotaryEncoder channelKnob(new Encoder(PIN_ENCCH_S1, PIN_ENCCH_S2), PIN_ENCCH_KEY);
 static Adafruit_SSD1305 display(128, 64, &Wire, -1);
 static OLED_Renderer renderer(display);
 static ChannelMenu channelMenu(&renderer, &channelKnob, onChannelSelected);
@@ -196,7 +196,7 @@ void setup()
     {
         ESP_LOGE(, "Error initializing music player");
     }
-    // musicPlayer.playSpeech("Hallo Marison, leuk dat je weer naar me wil luisteren. Hihi", "nl"); // Google TTS
+    musicPlayer.playSpeech("Hallo Marison, leuk dat je weer naar me wil luisteren. Hihi", "nl"); // Google TTS
 
     if (!renderer.init(display.begin(SSD1305_ADDR, false)))
     {
