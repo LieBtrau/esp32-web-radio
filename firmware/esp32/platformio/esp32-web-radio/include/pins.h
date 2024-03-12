@@ -25,5 +25,8 @@ typedef enum pin_def_t
     PIN_ENCCH_KEY = 36,
 
     // News button
-    PIN_NEWS_BTN = 33
+    PIN_NEWS_BTN = 33,
+
+    // Soft power latch enable
+    PIN_PWR_EN = 26
 } pin_def_t;

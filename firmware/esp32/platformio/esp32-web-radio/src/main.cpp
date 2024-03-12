@@ -155,6 +155,8 @@ void music(MusicActions action)
 void setup()
 {
     ESP_LOGI(, "\r\nBuild %s, %s %s\r\n", AUTO_VERSION, __DATE__, __TIME__);
+    pinMode(PIN_PWR_EN, OUTPUT);
+    digitalWrite(PIN_PWR_EN, HIGH);
     Wire.setPins(PIN_SDA, PIN_SCL);
 
     volumeKnob.init();
@@ -227,8 +229,13 @@ void loop()
     }
 
     newsButton.update();
+    if(newsButton.read() == LOW)
+    {
+        ESP_LOGI(, "News button pressed");
+    }
     if (newsButton.fell() && music_state != MusicActions::PLAY_NEWS)
     {
+        ESP_LOGI(, "News button pressed");
         music(MusicActions::PLAY_NEWS);
         show(ScreenActions::SHOW_NEWS);
     }
@@ -270,6 +277,7 @@ void loop()
         }
         ESP_LOGI(, "Going to sleep");
         delay(1000);
+        digitalWrite(PIN_PWR_EN, LOW);
         esp_deep_sleep_start();
         break;
     default:
