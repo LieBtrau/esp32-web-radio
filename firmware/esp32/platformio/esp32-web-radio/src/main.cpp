@@ -159,6 +159,11 @@ void setup()
     digitalWrite(PIN_PWR_EN, HIGH);
     Wire.setPins(PIN_SDA, PIN_SCL);
 
+    if (!renderer.init(display.begin(SSD1305_ADDR, false)))
+    {
+        ESP_LOGE(, "Unable to initialize OLED");
+    }
+
     volumeKnob.init();
     channelKnob.init();
 
@@ -199,11 +204,6 @@ void setup()
         ESP_LOGE(, "Error initializing music player");
     }
     musicPlayer.playSpeech("Hallo Marison, leuk dat je weer naar me wil luisteren. Hihi", "nl"); // Google TTS
-
-    if (!renderer.init(display.begin(SSD1305_ADDR, false)))
-    {
-        ESP_LOGE(, "Unable to initialize OLED");
-    }
 
     String selectedChannel;
     if (streamDB.getCurrentStream(selectedChannel))
