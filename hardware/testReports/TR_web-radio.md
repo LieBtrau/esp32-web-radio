@@ -13,14 +13,24 @@
 | TIR2 | J1 is not labeled                         | Add polarity of J1 to silkscreen                       | Open   |
 | TIR3 | UART.TX doesn't work above 115200baud     | Remove C20                                             | Open   |
 | TIR4 | Noise on 5V line, caused by current peaks | Power for U3.7&8: Add a zero-ohm link from 3V3 and a 0ohm resistor to 5V | Open |
-| TIR5 | OLED can not be initialized               | Change I²C-pull-ups R25 & R26 from 10K to 1K           | Open   |
+| TIR5 | OLED can not be initialized               | Change I²C-pull-ups R25 & R26 from 10K to 1K, better use 3.3k | Open   |
 | TIR6 | Rising edge on PROG./RST is too fast      | Change C26 from 100nF to 1µF              | Open   |
+| TIR7 | Rotary encoder doesn't fit                | Change footprint : move the two slots further away from the center, 0.2mm? | Open   |
+| TIR8 | UVLO of U1 is not used                   | Replace R1 by 10K+3.3K.  Add 10K from U1.4 to GND | Open   |  
+| TIR9 | Pushing a button is not always recognized.           | Replace R34, R35, R36, R37 and R40 by 1K<br/>Replace C31, C32, C33, C34 and C36 by 100nF | Open   |
+| TIR10| FFC doesn't go straight into the connector | Shift J2 1mm to the left and lock position in the layout. | Open   |
+| TIR11| News button is hard to see | Replace SW3 by a button with a white cap | Open   |
+| TIR12 | No termination on high speed lines | Add series termination on SPI/I²C lines | Open   |
+| TIR13 | SW1 needs to be pushed for several seconds until the radio turns on. | Improve the soft power latch circuit | Open   |
 
 # Test Results
-## Power & reset
+## PBA assembly remarks
 | Action | Expected Result | Observed result | Status |
 |--------|-----------------|-----------------|--------|
 | Silkscreen on PCB | Polarities are labeled | * J1 is not labeled<br/>* during debug I accidentally put power on the audio output. | TIR2 |
+| rotary encoder | easy fit | A hard push is needed to fit these | TIR7 |
+
+## Power & reset
 | Soft-start of power supply | ms-delay | 1V/ms rising edge<br/>It's important to have reverse current protection (with a series diode.  Q4 doesn't provide reverse current protection).  So that a dropping input voltage, due to high source resistance, doesn't discharge the elcos.  Otherwise a non-monotonous rising edge might occur. | ✅ |
 | 5V on C9, without ESP Prog connected | 0V | 0V | ✅ |
 | Noise on 5V line |  | 100mVpp | TIR4 |
@@ -39,6 +49,7 @@
 | Checking UART.TX | switches between 5V and 0V | * switches between 0.5V and 3V3<br/>* ESP-Prog UART is always 3V3, no matter the output voltage setting of the ESP-Prog<br/>* The ESP32-WROVER has an internal 499ohm resistor on its TX-line, so don't choose the pull-ups a too small value because you'll end up above the Vil of the ESP-Prog. | TIR3 |
 | Checking audio output | playing sound | sound plays, but noise is just as loud as the music | TIR4 |
 | OLED | shows text | Can not be initialized because SDA=0 (it is 1.5VDC) | TIR5 |
+| Button debouncing | no bouncing | When switch is pushed, voltage on IO-line is 0.73V which is too high<br/>The 10K series resistors in the debouncing circuit are too large.  They form a resistor divider with the pull-up resistor inside the MCU. | TIR9 |
 
 # Test Result Details
 
