@@ -29,9 +29,11 @@ static const char *NEWS_STREAM = "VRT NWS";
 static const int DEFAULT_SCREEN_TIMEOUT = 240000;
 static const int VOLUME_SCREEN_TIMEOUT = 2000;
 static const int CHANNEL_SCREEN_TIMEOUT = 5000;
+static const int PIR_TIMEOUT = 900000; // 15 minutes
 
 void showstreamtitle(const String &artist, const String &song_title); // non-static, must be visible to Music.cpp
 static void onChannelSelected(const String &name);
+static void radio_off();
 
 static Music musicPlayer;
 static WiFiMulti wifiMulti;
@@ -42,7 +44,7 @@ static Adafruit_SSD1305 display(128, 64, &Wire, -1);
 static OLED_Renderer renderer(display);
 static ChannelMenu channelMenu(&renderer, &channelKnob, onChannelSelected);
 static AsyncDelay screenTimeout;
-static bool personDetected = true; // to be replaced by PIR sensor
+static AsyncDelay pirTimeout;
 static String last_artist = "", last_song_title = "";
 static Bounce newsButton = Bounce();
 
@@ -151,7 +153,6 @@ void music(MusicActions action)
     music_state = action;
 }
 
-
 void setup()
 {
     ESP_LOGI(, "\r\nBuild %s, %s %s\r\n", AUTO_VERSION, __DATE__, __TIME__);
@@ -195,7 +196,7 @@ void setup()
     while (stat != WL_CONNECTED)
     {
         stat = wifiMulti.run();
-        ESP_LOGI(,"WiFi status: %d\r\n", (int)stat);
+        ESP_LOGI(, "WiFi status: %d\r\n", (int)stat);
         delay(100);
     }
 
@@ -213,7 +214,7 @@ void setup()
     }
 
     screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
-
+    pirTimeout.start(PIR_TIMEOUT, AsyncDelay::MILLIS);
     newsButton.attach(PIN_NEWS_BTN, INPUT_PULLUP);
     newsButton.interval(5);
 }
@@ -229,7 +230,7 @@ void loop()
     }
 
     newsButton.update();
-    if(newsButton.read() == LOW)
+    if (newsButton.read() == LOW)
     {
         ESP_LOGI(, "News button pressed");
     }
@@ -260,25 +261,7 @@ void loop()
         show(ScreenActions::SHOW_VOLUME);
         break;
     case RotaryEncoder::BUTTON_FELL:
-        show(ScreenActions::SLEEP);
-        musicPlayer.stopStream();
-        musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
-        for (int i = 0; i < 10; i++)
-        {
-            if ((streamDB.save(STREAMS_FILE)))
-            {
-                ESP_LOGI(, "Stream database saved");
-                break;
-            }
-        }
-        while (musicPlayer.isPlaying())
-        {
-            musicPlayer.update();
-        }
-        ESP_LOGI(, "Going to sleep");
-        delay(1000);
-        digitalWrite(PIN_PWR_EN, LOW);
-        esp_deep_sleep_start();
+        radio_off();
         break;
     default:
         break;
@@ -301,6 +284,17 @@ void loop()
         case ScreenActions::SHOW_NEWS:
             break;
         }
+    }
+
+    // PIR sensor
+    if(digitalRead(PIN_PIR) == HIGH)
+    {
+        pirTimeout.restart();
+    }
+    if (pirTimeout.isExpired())
+    {
+        ESP_LOGI(, "PIR timeout");
+        radio_off();
     }
 }
 
@@ -329,4 +323,27 @@ void showstreamtitle(const String &artist, const String &song_title)
     last_artist = artist;
     last_song_title = song_title;
     show(ScreenActions::SHOW_SONG);
+}
+
+void radio_off()
+{
+    show(ScreenActions::SLEEP);
+    musicPlayer.stopStream();
+    musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
+    for (int i = 0; i < 10; i++)
+    {
+        if ((streamDB.save(STREAMS_FILE)))
+        {
+            ESP_LOGI(, "Stream database saved");
+            break;
+        }
+    }
+    while (musicPlayer.isPlaying())
+    {
+        musicPlayer.update();
+    }
+    ESP_LOGI(, "Going to sleep");
+    delay(1000);
+    digitalWrite(PIN_PWR_EN, LOW);
+    esp_deep_sleep_start();
 }

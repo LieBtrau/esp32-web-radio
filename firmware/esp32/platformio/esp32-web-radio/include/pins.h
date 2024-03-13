@@ -28,5 +28,8 @@ typedef enum pin_def_t
     PIN_NEWS_BTN = 33,
 
     // Soft power latch enable
-    PIN_PWR_EN = 26
+    PIN_PWR_EN = 26,
+
+    // PIR sensor
+    PIN_PIR = 27
 } pin_def_t;
