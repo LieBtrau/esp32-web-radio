@@ -21,7 +21,7 @@
 | TIR10| FFC doesn't go straight into the connector | Shift J2 1mm to the left and lock position in the layout. | Open   |
 | TIR11| News button is hard to see | Replace SW3 by a button with a white cap | Open   |
 | TIR12 | No termination on high speed lines | Add series termination on SPI/I²C lines | Open   |
-| TIR13 | SW1 needs to be pushed for several seconds until the radio turns on. | Improve the soft power latch circuit | Open   |
+| TIR13 | SW1 needs to be pushed for several seconds until the radio turns on. | Initialize the display as soon as possible after powerup to notify that the unit is powered.</br>The built-in ULP might be used to latch the power on. <br/>A power LED would be a good idea. | Open   |
 
 # Test Results
 ## PBA assembly remarks
