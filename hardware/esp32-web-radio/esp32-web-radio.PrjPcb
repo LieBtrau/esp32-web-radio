@@ -293,7 +293,7 @@ UniqueID=0AE53688-3974-4336-9AF5-76AE5CDE23FC
 Description=I2C
 AllowFabrication=0
 ParameterCount=0
-VariationCount=8
+VariationCount=11
 Variation1=Designator=R22|UniqueId=\KZDBWSEY|Kind=1|AlternatePart= 
 Variation2=Designator=U3|UniqueId=\EMAHLMNC|Kind=1|AlternatePart= 
 Variation3=Designator=R?|UniqueId=\BNOQASIP|Kind=1|AlternatePart= 
@@ -302,6 +302,9 @@ Variation5=Designator=R22|UniqueId=\HRXFQOWG\ZHPHNZJY|Kind=0|AlternatePart=
 Variation6=Designator=U3|UniqueId=\SFHUJMLZ\SJRJMKYF|Kind=0|AlternatePart= 
 Variation7=Designator=R25|UniqueId=\QUPSEEFT\BSAABFAF|Kind=0|AlternatePart= 
 Variation8=Designator=R18|UniqueId=\SFHUJMLZ\UYCCUWOG|Kind=1|AlternatePart= 
+Variation9=Designator=R41|UniqueId=\SFHUJMLZ\VXXZQDVP|Kind=1|AlternatePart= 
+Variation10=Designator=R41|UniqueId=\QUPSEEFT\CPMGSOWB|Kind=0|AlternatePart= 
+Variation11=Designator=C20|UniqueId=\QUPSEEFT\WZHICFZT|Kind=1|AlternatePart= 
 ParamVariationCount=0
 
 [ProjectVariant2]
@@ -337,20 +340,20 @@ DocumentPath=Project Outputs for esp32-web-radio\Design Rule Check - esp32-web-r
 DItemRevisionGUID=
 
 [Parameter1]
-Name=Project_link
-Value=https://github.com/LieBtrau/esp32-web-radio
+Name=assembly_revision
+Value=0
 
 [Parameter2]
-Name=board_revision
-Value=1.0
-
-[Parameter3]
 Name=board_name
 Value=WEBRAD
 
+[Parameter3]
+Name=board_revision
+Value=1.1
+
 [Parameter4]
-Name=assembly_revision
-Value=0
+Name=Project_link
+Value=https://github.com/LieBtrau/esp32-web-radio
 
 [Configuration1]
 Name=Sources
