@@ -1,5 +1,7 @@
 # Description
 
+<img src="./info/pictures/IMG_20240320_214157_546.jpg" width="500"/>
+
 Electronics design and firmware of for the conversion of an FM-radio to a web radio based on the ESP32 microcontroller.
 
 ## Design goals
