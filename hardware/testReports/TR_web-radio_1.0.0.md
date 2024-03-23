@@ -9,19 +9,18 @@
 # Test Incident Reports
 | Test | Incident                                 | Proposed Solution                                      | Status |
 |------|------------------------------------------|--------------------------------------------------------|--------|
-| TIR1 | ESP32-WROVER-E-N16R8 fails to flash       | Use WROVER module with 4MB flash instead of 16MB       | Open   |
-| TIR2 | J1 is not labeled                         | Add polarity of J1 to silkscreen                       | Open   |
-| TIR3 | UART.TX doesn't work above 115200baud     | Remove C20                                             | Open   |
-| TIR4 | Noise on 5V line, caused by current peaks | Power for U3.7&8: Add a zero-ohm link from 3V3 and a 0ohm resistor to 5V | Open |
-| TIR5 | OLED can not be initialized               | Change I²C-pull-ups R25 & R26 from 10K to 1K, better use 3.3k | Open   |
-| TIR6 | Rising edge on PROG./RST is too fast      | Change C26 from 100nF to 1µF              | Open   |
-| TIR7 | Rotary encoder doesn't fit                | Change footprint : move the two slots further away from the center, 0.2mm? | Open   |
-| TIR8 | UVLO of U1 is not used                   | Replace R1 by 10K+3.3K.  Add 10K from U1.4 to GND | Open   |  
-| TIR9 | Pushing a button is not always recognized.           | Replace R34, R35, R36, R37 and R40 by 1K<br/>Replace C31, C32, C33, C34 and C36 by 100nF | Open   |
-| TIR10| FFC doesn't go straight into the connector | Shift J2 1mm to the left and lock position in the layout. | Open   |
-| TIR11| News button is hard to see | Replace SW3 by a button with a white cap | Open   |
-| TIR12 | No termination on high speed lines | Add series termination on SPI/I²C lines | Open   |
-| TIR13 | SW1 needs to be pushed for several seconds until the radio turns on. | Initialize the display as soon as possible after powerup to notify that the unit is powered.</br>The built-in ULP might be used to latch the power on. <br/>A power LED would be a good idea. | Open   |
+| TIR1 | ESP32-WROVER-E-N16R8 fails to flash at 460800baud | See TIR3       | ✅   |
+| TIR2 | J1 is not labeled                         | Add polarity of J1 to silkscreen                       | ✅   |
+| TIR3 | UART.TX doesn't work above 115200baud     | Remove C20                                             | ✅   |
+| TIR4 | Noise on 5V line, caused by current peaks | * Power for U3.7&8: Add a zero-ohm link from 3V3 and a 0ohm resistor to 5V<br/>* Replace L1 by an inductor with lower Rdc | ✅ |
+| TIR5 | OLED can not be initialized               | Change I²C-pull-ups R25 & R26 from 10K to 1K, better use 3.3k | ✅   |
+| TIR6 | Rising edge on PROG./RST is too early     | * Add supervisor that releases reset when VLED is present<br/>* Add disconnect on booster so that it only gets power once 3V3 is high enough.  | ✅  |
+| TIR7 | Rotary encoder doesn't fit                | Change footprint : move the two slots 0.3mm further away from the center | ✅   |
+| TIR8 | UVLO of U1 is not used                   | This will be handled by a disconnect circuit, see TIR6. | ✅   |  
+| TIR9 | Pushing a button is not always recognized.  Logic low level is too high. | Replace R34, R35, R36, R37 and R40 by 1K<br/>Replace C31, C32, C33, C34 and C36 by 100nF | ✅   |
+| TIR10| FFC doesn't go straight into the connector | Shift J2 1mm to the left and lock position in the layout. | ✅   |
+| TIR11 | No termination on high speed lines | Add series termination on SPI/I²C lines | ✅   |
+| TIR12 | SW1 needs to be pushed for several seconds until the radio turns on. | Initialize the display as soon as possible after powerup to notify that the unit is powered.</br>The built-in ULP might be used to latch the power on.  | Open   |
 
 # Test Results
 ## PBA assembly remarks
@@ -31,6 +30,8 @@
 | rotary encoder | easy fit | A hard push is needed to fit these | TIR7 |
 
 ## Power & reset
+| Action | Expected Result | Observed result | Status |
+|--------|-----------------|-----------------|--------|
 | Soft-start of power supply | ms-delay | 1V/ms rising edge<br/>It's important to have reverse current protection (with a series diode.  Q4 doesn't provide reverse current protection).  So that a dropping input voltage, due to high source resistance, doesn't discharge the elcos.  Otherwise a non-monotonous rising edge might occur. | ✅ |
 | 5V on C9, without ESP Prog connected | 0V | 0V | ✅ |
 | Noise on 5V line |  | 100mVpp | TIR4 |
