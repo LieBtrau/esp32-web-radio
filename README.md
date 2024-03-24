@@ -24,7 +24,13 @@
   * [Power entry module](./hardware/testReports/TR_power-entry_1.0.0.md)
 
 # Hardware version 1.1
-PCB data with corrections and improvements will be released in the future. It's unclear whether new hardware will be produced. The current hardware is working fine after patching. Ordering new hardware is expensive, wasteful, and time-consuming.
+The hardware version 1.0 is working fine after patching. Ordering new hardware (i.e. this version 1.1) is expensive, wasteful, and time-consuming.
+
+* Release binaries : will not be created
+* Online Altium viewer (schematic, PCB, 3D view, Draftsman drawing, BoM)
+  * [Logic board](https://365.altium.com/files/9CB82595-BE36-474F-A76E-B6EA8003FF0C)
+  * Front panel : will not be created, changes from previous version are minor
+  * Power entry module : will not be created, changes from previous version are minor
 
 # Why web radio instead of DAB+?
 * DAB+ is limited to local radio stations. Web radio gives access to radio stations from all over the world.
