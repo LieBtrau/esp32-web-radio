@@ -4,10 +4,10 @@
 <table>
   <tr>
     <td>
-      <img src="./info/pictures/IMG_20240320_214157_546.jpg" height="400"/>
+      <img src="./info/pictures/IMG_20240320_214157_546.jpg" width="400"/>
     </td>
     <td>
-      <img src="./info/block_diagram.drawio.png" height="400"/>
+      <img src="./info/block_diagram.drawio.png" width="400"/>
     </td>
   </tr>
 </table>
