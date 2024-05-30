@@ -34,6 +34,7 @@ bool Music::init(const uint8_t i2s_bck, const uint8_t i2s_ws, const uint8_t i2s_
         digitalWrite(_pin_PA_enable, HIGH);
     }
 #endif
+    _audio.setVolume(_volume);
     return true;
 }
 
