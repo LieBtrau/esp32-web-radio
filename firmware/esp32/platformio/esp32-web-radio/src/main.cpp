@@ -174,7 +174,7 @@ void setup()
         while (1)
             ;
     }
-    streamDB.open(STREAMS_FILE);
+    streamDB.load(STREAMS_FILE);
     for (int i = 0; i < streamDB.size(); i++)
     {
         String name;
@@ -204,14 +204,20 @@ void setup()
     {
         ESP_LOGE(, "Error initializing music player");
     }
-    musicPlayer.playSpeech("Hallo Marison, leuk dat je weer naar me wil luisteren. Hihi", "nl"); // Google TTS
+    musicPlayer.playSpeech("Hallo Marison, geniet van de muziek.", "nl"); // Google TTS
+    while (musicPlayer.isPlaying())
+    {
+        musicPlayer.update();
+    }
 
     String selectedChannel;
-    if (streamDB.getCurrentStream(selectedChannel))
+    if (!streamDB.getCurrentStream(selectedChannel))
     {
-        ESP_LOGI(, "Resuming stream: %s", selectedChannel);
-        onChannelSelected(selectedChannel.c_str());
+        streamDB.getFirstStream(selectedChannel);
+        streamDB.setCurrentStream(selectedChannel);
     }
+    ESP_LOGI(, "Resuming stream: %s", selectedChannel.c_str());
+    onChannelSelected(selectedChannel.c_str());
 
     screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
     pirTimeout.start(PIR_TIMEOUT, AsyncDelay::MILLIS);
@@ -230,10 +236,6 @@ void loop()
     }
 
     newsButton.update();
-    if (newsButton.read() == LOW)
-    {
-        ESP_LOGI(, "News button pressed");
-    }
     if (newsButton.fell() && music_state != MusicActions::PLAY_NEWS)
     {
         ESP_LOGI(, "News button pressed");
@@ -287,7 +289,7 @@ void loop()
     }
 
     // PIR sensor
-    if(digitalRead(PIN_PIR) == HIGH)
+    if (digitalRead(PIN_PIR) == HIGH)
     {
         pirTimeout.restart();
     }
@@ -330,14 +332,15 @@ void radio_off()
     show(ScreenActions::SLEEP);
     musicPlayer.stopStream();
     musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
-    for (int i = 0; i < 10; i++)
+    if ((streamDB.safeSave(STREAMS_FILE)))
     {
-        if ((streamDB.save(STREAMS_FILE)))
-        {
-            ESP_LOGI(, "Stream database saved");
-            break;
-        }
+        ESP_LOGI(, "Stream database saved");
     }
+    else
+    {
+        ESP_LOGE(, "Error saving stream database");
+    }
+    SPIFFS.end();
     while (musicPlayer.isPlaying())
     {
         musicPlayer.update();

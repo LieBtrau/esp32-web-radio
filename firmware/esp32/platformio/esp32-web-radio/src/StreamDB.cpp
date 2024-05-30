@@ -14,26 +14,27 @@
 
 // File System
 #include "SPIFFS.h"
+#include "rom/crc.h"
 
-bool StreamDB::open(const char *dbFile)
+bool StreamDB::load(const char *dbFilePath)
 {
-    ESP_LOGI(, "[DB] open(%s)", dbFile);
+    ESP_LOGI(, "[DB] open(%s)", dbFilePath);
 
-    File db = SPIFFS.open(dbFile, "r");
-    if (!db)
+    File dbFile = SPIFFS.open(dbFilePath, "r");
+    if (!dbFile)
     {
-        ESP_LOGE(,"ERROR: file not found");
+        ESP_LOGE(, "ERROR: file not found");
         return false;
     }
 
     // Get the root object in the document
-    DeserializationError err = deserializeJson(_doc, db);
+    DeserializationError err = deserializeJson(_doc, dbFile);
     if (err)
     {
-        ESP_LOGE(,"%s", err.c_str());
+        ESP_LOGE(, "%s", err.c_str());
         return false;
     }
-    db.close();
+    dbFile.close();
 
     _streams = _doc["streams"];
 
@@ -45,26 +46,71 @@ bool StreamDB::open(const char *dbFile)
     return true;
 }
 
-bool StreamDB::save(const char *dbFile)
+bool StreamDB::save(const char *dbFilePath)
 {
-    ESP_LOGI(TAG, "[DB] save(%s)", dbFile);
+    ESP_LOGI(TAG, "[DB] save(%s)", dbFilePath);
 
-    File db = SPIFFS.open(dbFile, "w");
-    if (!db)
+    File dbFile = SPIFFS.open(dbFilePath, "w");
+    if (!dbFile)
     {
-        ESP_LOGE(,"ERROR: file not found");
+        ESP_LOGE(, "ERROR: file not found");
         return false;
     }
 
     // Serialize JSON to file
-    if (serializeJson(_doc, db) == 0)
+    if (serializeJson(_doc, dbFile) == 0)
     {
-        ESP_LOGE(,"Failed to write to file");
+        ESP_LOGE(, "Failed to write to file");
         return false;
     }
-    db.close();
+    dbFile.close();
+    return true;
+}
 
-    return open(dbFile);
+bool StreamDB::safeSave(const char *dbFile)
+{
+    String tempFile = String(dbFile) + ".tmp";
+    String backupFile = String(dbFile) + ".bak";
+    uint32_t crc_file = 0;
+
+    if (!save(tempFile.c_str()))
+    {
+        ESP_LOGE(, "Error saving temp-file: %s", tempFile.c_str());
+        return false;
+    }
+
+    uint32_t crc_json = getCrc();
+    ESP_LOGI(, "JSON CRC: %08X", crc_json);
+    if (!getCrc(tempFile.c_str(), crc_file))
+    {
+        ESP_LOGE(, "Error getting CRC");
+        return false;
+    }
+    if (crc_json != crc_file)
+    {
+        ESP_LOGE(, "CRC mismatch");
+        return false;
+    }
+
+    if (SPIFFS.exists(dbFile))
+    {
+        if (SPIFFS.exists(backupFile))
+        {
+            SPIFFS.remove(backupFile);
+        }
+        if (!SPIFFS.rename(dbFile, backupFile))
+        {
+            ESP_LOGE(, "Error renaming file %s to %s", dbFile, backupFile.c_str());
+            return false;
+        }
+    }
+
+    if (! SPIFFS.rename(tempFile, dbFile))
+    {
+        ESP_LOGE(, "Error renaming file %s to %s", tempFile.c_str(), dbFile);
+        return false;
+    }
+    return true;
 }
 
 bool StreamDB::getName(int index, String &name) const
@@ -129,14 +175,24 @@ bool StreamDB::setVolume(const String &name, uint8_t volume)
 bool StreamDB::getCurrentStream(String &name) const
 {
     name = _doc["CurrentStream"].as<String>();
-    return name.length() > 0;
+    return name.length() > 0 && name.compareTo("null") != 0;
+}
+
+bool StreamDB::getFirstStream(String &name) const
+{
+    if (_streams.size() > 0)
+    {
+        name = _streams[0]["name"].as<String>();
+        return true;
+    }
+    return false;
 }
 
 void StreamDB::setCurrentStream(const String &name)
 {
     for (JsonVariant value : _streams)
     {
-        if (value["name"].as<String>().compareTo(name) == 0)
+        if (value["name"].as<String>().compareTo(name) == 0 && name.compareTo("null") != 0)
         {
             _lastStream = _doc["CurrentStream"].as<String>();
             _doc["CurrentStream"] = name;
@@ -148,4 +204,27 @@ void StreamDB::setCurrentStream(const String &name)
 void StreamDB::restoreLastStream()
 {
     _doc["CurrentStream"] = _lastStream;
+}
+
+bool StreamDB::getCrc(const char *dbFile, uint32_t &crc)
+{
+    crc = 0;
+    File file = SPIFFS.open(dbFile, "r");
+    if (!file)
+    {
+        ESP_LOGE(, "ERROR: file not found");
+        return false;
+    }
+    while (file.available())
+    {
+        char c = file.read();
+        crc = crc32_le(crc, (const uint8_t *)&c, 1);
+    }
+    file.close();
+    return crc;
+}
+
+uint32_t StreamDB::getCrc()
+{
+    return crc32_le(0, (const uint8_t *)_doc.as<String>().c_str(), _doc.as<String>().length());
 }
