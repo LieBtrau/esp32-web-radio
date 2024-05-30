@@ -24,7 +24,7 @@ public:
     uint8_t getMaxValue() const;
 
 private:
-    uint8_t _volume = 5;
+    uint8_t _volume = 6;
     Audio _audio;
     const static int MIN_VOLUME = 0;
 #ifdef ESP32_AUDIO_KIT
