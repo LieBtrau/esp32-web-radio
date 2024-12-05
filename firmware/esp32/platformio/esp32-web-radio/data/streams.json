@@ -45,6 +45,11 @@
         "volume": 5
     },
     {
+        "name": "Radio Caroline",
+        "url": "http://stream.radiocaroline.net/rc128/;",
+        "volume": 5
+    },
+    {
         "name": "JoeFM",
         "url": "http://icecast-qmusicbe-cdp.triple-it.nl/joe.mp3",
         "volume": 5
