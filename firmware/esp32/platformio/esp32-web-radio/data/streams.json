@@ -1,4 +1,10 @@
 {"streams":[
+    
+    {
+        "name": "Top Radio",
+        "url": "http://28513.live.streamtheworld.com/TOP_RADIO.mp3",
+        "volume": 5
+    },
     {
         "name": "Bespren Radio",
         "url": "http://streamnavs.net:8089/autodj",
