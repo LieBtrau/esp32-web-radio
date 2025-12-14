@@ -204,7 +204,7 @@ void setup()
     {
         ESP_LOGE(, "Error initializing music player");
     }
-    musicPlayer.playSpeech("Hallo Marison, geniet van de muziek.", "nl"); // Google TTS
+    musicPlayer.playSpeech("ooh, Geniet van de muziek, Marison", "nl"); // Google TTS
     while (musicPlayer.isPlaying())
     {
         musicPlayer.update();
