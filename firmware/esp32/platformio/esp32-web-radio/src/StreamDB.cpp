@@ -11,19 +11,22 @@
  */
 
 #include "StreamDB.h"
+#include "esp_check.h"
 
 // File System
 #include "SPIFFS.h"
 #include "rom/crc.h"
 
+static const char *TAG = "StreamDB";
+
 bool StreamDB::load(const char *dbFilePath)
 {
-    ESP_LOGI(, "[DB] open(%s)", dbFilePath);
+    ESP_LOGI(TAG, "[DB] open(%s)", dbFilePath);
 
     File dbFile = SPIFFS.open(dbFilePath, "r");
     if (!dbFile)
     {
-        ESP_LOGE(, "ERROR: file not found");
+        ESP_LOGE(TAG, "ERROR: file not found");
         return false;
     }
 
@@ -31,7 +34,7 @@ bool StreamDB::load(const char *dbFilePath)
     DeserializationError err = deserializeJson(_doc, dbFile);
     if (err)
     {
-        ESP_LOGE(, "%s", err.c_str());
+        ESP_LOGE(TAG, "%s", err.c_str());
         return false;
     }
     dbFile.close();
@@ -53,14 +56,14 @@ bool StreamDB::save(const char *dbFilePath)
     File dbFile = SPIFFS.open(dbFilePath, "w");
     if (!dbFile)
     {
-        ESP_LOGE(, "ERROR: file not found");
+        ESP_LOGE(TAG, "ERROR: file not found");
         return false;
     }
 
     // Serialize JSON to file
     if (serializeJson(_doc, dbFile) == 0)
     {
-        ESP_LOGE(, "Failed to write to file");
+        ESP_LOGE(TAG, "Failed to write to file");
         return false;
     }
     dbFile.close();
@@ -75,20 +78,20 @@ bool StreamDB::safeSave(const char *dbFile)
 
     if (!save(tempFile.c_str()))
     {
-        ESP_LOGE(, "Error saving temp-file: %s", tempFile.c_str());
+        ESP_LOGE(TAG, "Error saving temp-file: %s", tempFile.c_str());
         return false;
     }
 
     uint32_t crc_json = getCrc();
-    ESP_LOGI(, "JSON CRC: %08X", crc_json);
+    ESP_LOGI(TAG, "JSON CRC: %08X", crc_json);
     if (!getCrc(tempFile.c_str(), crc_file))
     {
-        ESP_LOGE(, "Error getting CRC");
+        ESP_LOGE(TAG, "Error getting CRC");
         return false;
     }
     if (crc_json != crc_file)
     {
-        ESP_LOGE(, "CRC mismatch");
+        ESP_LOGE(TAG, "CRC mismatch");
         return false;
     }
 
@@ -100,14 +103,14 @@ bool StreamDB::safeSave(const char *dbFile)
         }
         if (!SPIFFS.rename(dbFile, backupFile))
         {
-            ESP_LOGE(, "Error renaming file %s to %s", dbFile, backupFile.c_str());
+            ESP_LOGE(TAG, "Error renaming file %s to %s", dbFile, backupFile.c_str());
             return false;
         }
     }
 
     if (! SPIFFS.rename(tempFile, dbFile))
     {
-        ESP_LOGE(, "Error renaming file %s to %s", tempFile.c_str(), dbFile);
+        ESP_LOGE(TAG, "Error renaming file %s to %s", tempFile.c_str(), dbFile);
         return false;
     }
     return true;
@@ -212,7 +215,7 @@ bool StreamDB::getCrc(const char *dbFile, uint32_t &crc)
     File file = SPIFFS.open(dbFile, "r");
     if (!file)
     {
-        ESP_LOGE(, "ERROR: file not found");
+        ESP_LOGE(TAG, "ERROR: file not found");
         return false;
     }
     while (file.available())

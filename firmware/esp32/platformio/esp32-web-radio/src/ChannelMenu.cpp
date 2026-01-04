@@ -2,6 +2,7 @@
 
 static void on_item_selected(MenuComponent *p_menu_component);
 static void (*onChannelSelected)(const String&) = nullptr;
+static const char *TAG = "ChannelMenu";
 
 ChannelMenu::ChannelMenu(MenuComponentRenderer *my_renderer, RotaryEncoder *my_rotary_encoder, void (*callback)(const String&)) : _ms(*my_renderer), channelKnob(my_rotary_encoder)
 {
@@ -13,7 +14,7 @@ void ChannelMenu::addMenuItem(const char *name)
     _menuItems = (MenuItem **)realloc(_menuItems, (_num_menuItems + 1) * sizeof(MenuItem *));
     if (_menuItems == NULL)
     {
-        ESP_LOGE(,"Unable to allocate memory for menu item");
+        ESP_LOGE(TAG,"Unable to allocate memory for menu item");
         return;
     }
 
@@ -21,13 +22,13 @@ void ChannelMenu::addMenuItem(const char *name)
     _menuNames = (char **)realloc(_menuNames, (_num_menuItems + 1) * sizeof(char *));
     if (_menuNames == NULL)
     {
-        ESP_LOGE(,"Unable to allocate memory for menu name");
+        ESP_LOGE(TAG,"Unable to allocate memory for menu name");
         return;
     }
     _menuNames[_num_menuItems] = (char *)malloc(strlen(name) + 1);
     if (_menuNames[_num_menuItems] == NULL)
     {
-        ESP_LOGE(,"Unable to allocate memory for menu name");
+        ESP_LOGE(TAG,"Unable to allocate memory for menu name");
         return;
     }
     strcpy(_menuNames[_num_menuItems], name);
