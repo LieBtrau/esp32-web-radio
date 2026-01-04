@@ -22,6 +22,8 @@
 #include "OLED_Renderer.h"
 #include "ChannelMenu.h"
 #include "Bounce2.h"
+#include "esp_log.h"
+//#include <SimpleFTPServer.h>
 
 static const uint8_t SSD1305_ADDR = 0x3C;
 static const char *STREAMS_FILE = "/streams.json";
@@ -30,6 +32,7 @@ static const int DEFAULT_SCREEN_TIMEOUT = 240000;
 static const int VOLUME_SCREEN_TIMEOUT = 2000;
 static const int CHANNEL_SCREEN_TIMEOUT = 5000;
 static const int PIR_TIMEOUT = 900000; // 15 minutes
+static const char *TAG = "Main";
 
 void showstreamtitle(const String &artist, const String &song_title); // non-static, must be visible to Music.cpp
 static void onChannelSelected(const String &name);
@@ -38,8 +41,8 @@ static void radio_off();
 static Music musicPlayer;
 static WiFiMulti wifiMulti;
 static StreamDB streamDB;
-static RotaryEncoder volumeKnob(new Encoder(PIN_ENCVOL_S1, PIN_ENCVOL_S2), PIN_ENCVOL_KEY);
-static RotaryEncoder channelKnob(new Encoder(PIN_ENCCH_S1, PIN_ENCCH_S2), PIN_ENCCH_KEY);
+static RotaryEncoder volumeKnob(PIN_ENCVOL_S1, PIN_ENCVOL_S2, PIN_ENCVOL_KEY);
+static RotaryEncoder channelKnob(PIN_ENCCH_S1, PIN_ENCCH_S2, PIN_ENCCH_KEY);
 static Adafruit_SSD1305 display(128, 64, &Wire, -1);
 static OLED_Renderer renderer(display);
 static ChannelMenu channelMenu(&renderer, &channelKnob, onChannelSelected);
@@ -47,6 +50,7 @@ static AsyncDelay screenTimeout;
 static AsyncDelay pirTimeout;
 static String last_artist = "", last_song_title = "";
 static Bounce newsButton = Bounce();
+//static FtpServer ftpSrv;
 
 enum class ScreenActions
 {
@@ -87,7 +91,7 @@ void show(ScreenActions action)
         }
         else
         {
-            ESP_LOGE(, "No current stream");
+            ESP_LOGE(TAG, "No current stream");
             renderer.clear();
         }
         break;
@@ -103,7 +107,7 @@ void show(ScreenActions action)
         }
         else
         {
-            ESP_LOGE(, "No current stream");
+            ESP_LOGE(TAG, "No current stream");
             renderer.clear();
         }
         break;
@@ -134,7 +138,7 @@ void music(MusicActions action)
     case MusicActions::PLAY_CHANNEL:
         if (streamDB.getCurrentStream(selectedChannel))
         {
-            ESP_LOGI(, "Selected channel: %s", selectedChannel.c_str());
+            ESP_LOGI(TAG, "Selected channel: %s", selectedChannel.c_str());
             streamDB.getVolume(selectedChannel, volume);
             streamDB.getStream(selectedChannel, url);
         }
@@ -155,14 +159,14 @@ void music(MusicActions action)
 
 void setup()
 {
-    ESP_LOGI(, "\r\nBuild %s, %s %s\r\n", AUTO_VERSION, __DATE__, __TIME__);
+    ESP_LOGI(TAG, "\r\nBuild %s, %s %s\r\n", AUTO_VERSION, __DATE__, __TIME__);
     pinMode(PIN_PWR_EN, OUTPUT);
     digitalWrite(PIN_PWR_EN, HIGH);
     Wire.setPins(PIN_SDA, PIN_SCL);
 
     if (!renderer.init(display.begin(SSD1305_ADDR, false)))
     {
-        ESP_LOGE(, "Unable to initialize OLED");
+        ESP_LOGE(TAG, "Unable to initialize OLED");
     }
 
     volumeKnob.init();
@@ -170,10 +174,11 @@ void setup()
 
     if (!SPIFFS.begin())
     {
-        ESP_LOGE(, "Cannot mount SPIFFS volume...be sure to upload Filesystem Image before uploading the sketch");
+        ESP_LOGE(TAG, "Cannot mount SPIFFS volume...be sure to upload Filesystem Image before uploading the sketch");
         while (1)
             ;
     }
+    //ftpSrv.begin("esp32","esp32");
     streamDB.load(STREAMS_FILE);
     for (int i = 0; i < streamDB.size(); i++)
     {
@@ -196,13 +201,13 @@ void setup()
     while (stat != WL_CONNECTED)
     {
         stat = wifiMulti.run();
-        ESP_LOGI(, "WiFi status: %d\r\n", (int)stat);
+        ESP_LOGI(TAG, "WiFi status: %d\r\n", (int)stat);
         delay(100);
     }
 
     if (!musicPlayer.init(I2S_BCLK, I2S_LRC, I2S_DOUT))
     {
-        ESP_LOGE(, "Error initializing music player");
+        ESP_LOGE(TAG, "Error initializing music player");
     }
     musicPlayer.playSpeech("ooh, Geniet van de muziek, Marison", "nl"); // Google TTS
     while (musicPlayer.isPlaying())
@@ -216,7 +221,7 @@ void setup()
         streamDB.getFirstStream(selectedChannel);
         streamDB.setCurrentStream(selectedChannel);
     }
-    ESP_LOGI(, "Resuming stream: %s", selectedChannel.c_str());
+    ESP_LOGI(TAG, "Resuming stream: %s", selectedChannel.c_str());
     onChannelSelected(selectedChannel.c_str());
 
     screenTimeout.start(DEFAULT_SCREEN_TIMEOUT, AsyncDelay::MILLIS);
@@ -227,7 +232,7 @@ void setup()
 
 void loop()
 {
-
+    //ftpSrv.handleFTP();
     musicPlayer.update(); // play audio
     if (channelMenu.loop())
     {
@@ -238,13 +243,13 @@ void loop()
     newsButton.update();
     if (newsButton.fell() && music_state != MusicActions::PLAY_NEWS)
     {
-        ESP_LOGI(, "News button pressed");
+        ESP_LOGI(TAG, "News button pressed");
         music(MusicActions::PLAY_NEWS);
         show(ScreenActions::SHOW_NEWS);
     }
     if (music_state == MusicActions::PLAY_NEWS && !musicPlayer.isPlaying())
     {
-        ESP_LOGI(, "News finished");
+        ESP_LOGI(TAG, "News finished");
         streamDB.restoreLastStream();
         last_artist = "";
         last_song_title = "";
@@ -271,7 +276,7 @@ void loop()
 
     if (screenTimeout.isExpired())
     {
-        ESP_LOGI(, "Screen timeout");
+        ESP_LOGI(TAG, "Screen timeout");
         screenTimeout.repeat();
         switch (screen_state)
         {
@@ -295,7 +300,7 @@ void loop()
     }
     if (pirTimeout.isExpired())
     {
-        ESP_LOGI(, "PIR timeout");
+        ESP_LOGI(TAG, "PIR timeout");
         radio_off();
     }
 }
@@ -307,7 +312,7 @@ void loop()
  */
 static void onChannelSelected(const String &name)
 {
-    ESP_LOGI(, "Setting channel: %s", name.c_str());
+    ESP_LOGI(TAG, "Setting channel: %s", name.c_str());
     streamDB.setCurrentStream(name);
     last_artist = "";
     last_song_title = "";
@@ -334,18 +339,18 @@ void radio_off()
     musicPlayer.playSpeech("Goodbye", "en"); // Google TTS
     if ((streamDB.safeSave(STREAMS_FILE)))
     {
-        ESP_LOGI(, "Stream database saved");
+        ESP_LOGI(TAG, "Stream database saved");
     }
     else
     {
-        ESP_LOGE(, "Error saving stream database");
+        ESP_LOGE(TAG, "Error saving stream database");
     }
     SPIFFS.end();
     while (musicPlayer.isPlaying())
     {
         musicPlayer.update();
     }
-    ESP_LOGI(, "Going to sleep");
+    ESP_LOGI(TAG, "Going to sleep");
     delay(1000);
     digitalWrite(PIN_PWR_EN, LOW);
     esp_deep_sleep_start();

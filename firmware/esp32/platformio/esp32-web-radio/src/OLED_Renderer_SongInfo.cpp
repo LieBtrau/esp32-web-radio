@@ -1,5 +1,5 @@
 #include "OLED_Renderer.h"
-
+const char *TAG = "OLED_Renderer";
 /**
  * @brief 
  * e.g. "Zia Quizon · Jungee Marcelo · Jungee Marcelo - Bakit Hindi Ka Crush Ng Crush Mo?"
