@@ -1,7 +1,8 @@
 #include "RotaryEncoder.h"
 
-RotaryEncoder::RotaryEncoder(Encoder *aRotaryEncoder, int const switchPin) : _myEncoder(aRotaryEncoder), _switchPin(switchPin)
+RotaryEncoder::RotaryEncoder(const int encPin1, const int encPin2, const int switchPin) : _encPin1(encPin1), _encPin2(encPin2), _switchPin(switchPin)
 {
+    _myEncoder = new ESP32Encoder();
 }
 
 RotaryEncoder::~RotaryEncoder()
@@ -10,6 +11,9 @@ RotaryEncoder::~RotaryEncoder()
 
 bool RotaryEncoder::init()
 {
+    _myEncoder->attachHalfQuad(_encPin1, _encPin2);
+    _myEncoder->setCount(0);
+    _oldPosition = 0;
     if(_switchPin < 0)
     {
         return true;
@@ -36,7 +40,7 @@ RotaryEncoder::ROTARY_ENCODER_STATE RotaryEncoder::rotary_encoder_update()
         }
     }
     // 2 state-step needed before updating value.  This avoids updating value in internotch states.
-    long newPosition = _myEncoder->read() >> 1; // ignore the last bit of the state
+    long newPosition = _myEncoder->getCount() >> 1; // ignore the last bit of the state
 
     if (newPosition - _oldPosition > 1)
     {
