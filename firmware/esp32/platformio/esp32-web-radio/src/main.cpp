@@ -23,7 +23,6 @@
 #include "ChannelMenu.h"
 #include "Bounce2.h"
 #include "esp_log.h"
-//#include <SimpleFTPServer.h>
 
 static const uint8_t SSD1305_ADDR = 0x3C;
 static const char *STREAMS_FILE = "/streams.json";
@@ -50,7 +49,6 @@ static AsyncDelay screenTimeout;
 static AsyncDelay pirTimeout;
 static String last_artist = "", last_song_title = "";
 static Bounce newsButton = Bounce();
-//static FtpServer ftpSrv;
 
 enum class ScreenActions
 {
@@ -172,13 +170,12 @@ void setup()
     volumeKnob.init();
     channelKnob.init();
 
-    if (!SPIFFS.begin())
+    if (!SPIFFS.begin(true))
     {
         ESP_LOGE(TAG, "Cannot mount SPIFFS volume...be sure to upload Filesystem Image before uploading the sketch");
         while (1)
             ;
     }
-    //ftpSrv.begin("esp32","esp32");
     streamDB.load(STREAMS_FILE);
     for (int i = 0; i < streamDB.size(); i++)
     {
@@ -204,6 +201,8 @@ void setup()
         ESP_LOGI(TAG, "WiFi status: %d\r\n", (int)stat);
         delay(100);
     }
+    ESP_LOGI(TAG, "Connected to WiFi network: %s", WiFi.SSID().c_str());
+    ESP_LOGI(TAG, "IP address: %s", WiFi.localIP().toString().c_str());
 
     if (!musicPlayer.init(I2S_BCLK, I2S_LRC, I2S_DOUT))
     {
@@ -232,7 +231,6 @@ void setup()
 
 void loop()
 {
-    //ftpSrv.handleFTP();
     musicPlayer.update(); // play audio
     if (channelMenu.loop())
     {
