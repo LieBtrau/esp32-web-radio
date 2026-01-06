@@ -1,8 +1,42 @@
 {"streams":[
-    
     {
         "name": "Top Radio",
         "url": "http://28513.live.streamtheworld.com/TOP_RADIO.mp3",
+        "volume": 5
+    },
+    {
+        "name": "Top BAM",
+        "url": "http://22183.live.streamtheworld.com/TOPBAM.mp3",
+        "volume": 5
+    },
+    {
+        "name": "Top Spinning",
+        "url": "http://25683.live.streamtheworld.com/TOPSPINNING.mp3",
+        "volume": 5
+    },
+    {
+        "name": "Top Versuz",
+        "url": "http://25633.live.streamtheworld.com/TOPVERSUZ.mp3",
+        "volume": 5
+    },
+    {
+        "name": "Top Retro",
+        "url": "http://22183.live.streamtheworld.com/TOPRETRO.mp3",
+        "volume": 5
+    },
+    {
+        "name": "Top Schaamteloze",
+        "url": "http://28993.live.streamtheworld.com/TOPSCHAAMTELOZE.mp3",
+        "volume": 5
+    },
+    {
+        "name": "Dance Top 1000",
+        "url": "http://27743.live.streamtheworld.com/DANCE_TOP1000.mp3",
+        "volume": 5
+    },
+    {
+        "name": "Top Zillion 100",
+        "url": "http://22183.live.streamtheworld.com/TOP_ZILLION100.mp3",
         "volume": 5
     },
     {
@@ -17,7 +51,7 @@
     },
     {
         "name": "Joe Easy",
-        "url": "https://icecast-qmusicbe-cdp.triple-it.nl/joe_easy.mp3",
+        "url": "http://icecast-qmusicbe-cdp.triple-it.nl/joe_easy.mp3",
         "volume": 5
     },
     {
@@ -27,7 +61,7 @@
     },
     {
         "name": "VRT NWS",
-        "url": "https://icecast.vrtcdn.be/vrtnws-high.mp3",
+        "url": "http://icecast.vrtcdn.be/vrtnws-high.mp3",
         "volume": 5
     }
     ],
