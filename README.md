@@ -32,6 +32,12 @@ The hardware version 1.0 is working fine after patching. Ordering new hardware (
   * Front panel : will not be created, changes from previous version are minor
   * Power entry module : will not be created, changes from previous version are minor
 
+# Issues
+* Power button needs to be pushed for more than 3 s to turn the unit on.  A power latch would be helpful here.
+* When no wifi network is found, the screen remains black leaving the user without a clue.  The screen could show a helpful message.
+* The unit goes into a temporary reboot loop during some songs until the start of the next song.  It might have something to do with illegal characters being shown on the display or simply a song text that is too long and causes buffer overruns.  To be investigated.
+* The original rotary encoder library worked better.  The current one sometimes misses steps.
+
 # Why web radio instead of DAB+?
 * DAB+ is limited to local radio stations. Web radio gives access to radio stations from all over the world.
 * DAB+ reception quality is not great indoors. The radio must be located near a window and the antenna must be fully extended.
